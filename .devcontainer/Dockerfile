@@ -8,6 +8,8 @@ RUN apt-get update \
     ca-certificates \
     curl \
     gcc \
+    gdb \
+    simavr \
     git \
     vim \
     clang-format \
