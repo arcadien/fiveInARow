@@ -15,21 +15,25 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <model.hpp>
+#include <Game.hpp>
 #include <unity.h>
+#include <TestGui.hpp>
 
 void tearDown() {}
 void setUp() {}
 
+
+
 void expect_player_to_be_created_with_initial_values() {
   Player cut(2);
   TEST_ASSERT_EQUAL_UINT8_MESSAGE(2, cut.id, "Player id");
-  TEST_ASSERT_EQUAL_UINT8_MESSAGE(0, cut.getTotalMetCount(),
-                                  "Player starts with 0 met shot");
+  TEST_ASSERT_EQUAL_UINT8_MESSAGE(0, cut.getTotalHitCount(),
+                                  "Player starts with 0 hit shot");
 }
 
 void expect_game_to_be_created_with_initial_4_players() {
-  Game cut;
+  TestGui testGui;
+  Game cut(&testGui);
   TEST_ASSERT_EQUAL_UINT8_MESSAGE(4, sizeof(cut.players) / sizeof(Player),
                                   "Game player count");
   TEST_ASSERT_NOT_NULL_MESSAGE(cut.currentPlayer,
@@ -37,29 +41,32 @@ void expect_game_to_be_created_with_initial_4_players() {
 }
 
 void expect_game_to_be_restarted() {
-  Game cut;
+  TestGui testGui;
+  Game cut(&testGui);
 
   cut.recordSucceededShoot();
 
-  TEST_ASSERT_EQUAL_UINT8_MESSAGE(1, cut.currentPlayer->getTotalMetCount(),
-                                  "Player met shot shall be recorded");
+  TEST_ASSERT_EQUAL_UINT8_MESSAGE(1, cut.currentPlayer->getTotalHitCount(),
+                                  "Player hit shot shall be recorded");
 
   cut.restart();
 
-  TEST_ASSERT_EQUAL_UINT8_MESSAGE(0, cut.currentPlayer->getTotalMetCount(),
+  TEST_ASSERT_EQUAL_UINT8_MESSAGE(0, cut.currentPlayer->getTotalHitCount(),
                                   "Player info shall be cleared");
 }
 
 void expect_game_to_accept_succeeded_shoot_and_update_player_stats() {
-  Game cut;
+  TestGui testGui;
+  Game cut(&testGui);
   cut.recordSucceededShoot();
 
-  TEST_ASSERT_EQUAL_UINT8_MESSAGE(1, cut.players[0].met[0],
+  TEST_ASSERT_EQUAL_UINT8_MESSAGE(1, cut.players[0].hit[0],
                                   "Player shall have one succeeded shoot");
 }
 
 void expect_game_to_switch_to_next_player_when_a_round_ends() {
-  Game cut;
+  TestGui testGui;
+  Game cut(&testGui);
 
   TEST_ASSERT_EQUAL_UINT8_MESSAGE(0, cut.currentPlayer->id,
                                   "Very first player shall be player 1");
@@ -69,33 +76,52 @@ void expect_game_to_switch_to_next_player_when_a_round_ends() {
                                   "Second player shall be player 2");
 }
 
-void expect_4_players_to_be_able_to_record_some_met_shot_in_one_turn() {
-  Game cut;
+void expect_4_players_to_be_able_to_record_some_hit_shot_in_one_turn() {
+  TestGui testGui;
+  Game cut(&testGui);
 
-  // player 1 has one met shot!
+  // player 1 has one hit shot!
   cut.recordSucceededShoot();
   cut.nextRound();
 
-  // player 2 has one met shot!
+  // player 2 has one hit shot!
   cut.recordSucceededShoot();
   cut.nextRound();
 
-  // player 3 has two met shot!
+  // player 3 has two hit shot!
   cut.recordSucceededShoot();
   cut.recordSucceededShoot();
   cut.nextRound();
 
-  // player 3 has no met shot :(
+  // player 4 has no hit shot :(
   cut.nextRound();
 
-  TEST_ASSERT_EQUAL_UINT8_MESSAGE(1, cut.players[0].getTotalMetCount(),
-                                  "player 1 shall have one met shot");
-  TEST_ASSERT_EQUAL_UINT8_MESSAGE(1, cut.players[1].getTotalMetCount(),
-                                  "player 2 shall have one met shot");
-  TEST_ASSERT_EQUAL_UINT8_MESSAGE(2, cut.players[2].getTotalMetCount(),
-                                  "player 3 shall have two met shot");
-  TEST_ASSERT_EQUAL_UINT8_MESSAGE(0, cut.players[3].getTotalMetCount(),
-                                  "player 4 shall not have any met shot");
+  TEST_ASSERT_EQUAL_UINT8_MESSAGE(1, cut.players[0].getTotalHitCount(),
+                                  "player 1 shall have one hit shot");
+  TEST_ASSERT_EQUAL_UINT8_MESSAGE(1, cut.players[1].getTotalHitCount(),
+                                  "player 2 shall have one hit shot");
+  TEST_ASSERT_EQUAL_UINT8_MESSAGE(2, cut.players[2].getTotalHitCount(),
+                                  "player 3 shall have two hit shot");
+  TEST_ASSERT_EQUAL_UINT8_MESSAGE(0, cut.players[3].getTotalHitCount(),
+                                  "player 4 shall not have any hit shot");
+}
+
+void expect_game_to_loop_over_round_until_finished() {
+  TestGui testGui;
+  Game cut(&testGui);
+  static const uint8_t PLAYER_COUNT = 4;
+  static const uint8_t ROUND_PER_PLAYER = 5;
+  static const uint8_t expectedRounds = PLAYER_COUNT * ROUND_PER_PLAYER;
+
+  uint8_t roundCounter = 0;
+
+  while (!cut.isFinished() && roundCounter <= expectedRounds) {
+    cut.nextRound();
+    roundCounter++;
+  }
+
+  TEST_ASSERT_EQUAL_UINT8_MESSAGE(expectedRounds, roundCounter,
+                                  "Maximum round count exceeded");
 }
 
 int main(int, char **) {
@@ -105,7 +131,8 @@ int main(int, char **) {
   RUN_TEST(expect_game_to_be_restarted);
   RUN_TEST(expect_game_to_accept_succeeded_shoot_and_update_player_stats);
   RUN_TEST(expect_game_to_switch_to_next_player_when_a_round_ends);
-  RUN_TEST(expect_4_players_to_be_able_to_record_some_met_shot_in_one_turn);
+  RUN_TEST(expect_4_players_to_be_able_to_record_some_hit_shot_in_one_turn);
+  RUN_TEST(expect_game_to_loop_over_round_until_finished);
 
   return UNITY_END();
 }
