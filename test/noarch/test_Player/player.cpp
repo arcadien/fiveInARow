@@ -24,10 +24,10 @@ void setUp() {}
 
 void expect_player_to_have_5_shots_at_beginning() {
   Player p(0);
-  TEST_ASSERT_EQUAL_UINT8_MESSAGE(5, p.totalShoots,
-                                  "Player begins with 5 shoots");
+  TEST_ASSERT_EQUAL_UINT8_MESSAGE(0, p.totalShoots,
+                                  "Player begins with 0 shoots");
   p.nextRound();
-  TEST_ASSERT_EQUAL_UINT8_MESSAGE(10, p.totalShoots,
+  TEST_ASSERT_EQUAL_UINT8_MESSAGE(5, p.totalShoots,
                                   "Shoots are incremented when round ends");
 }
 void expect_met_count_to_spread_well_on_five_rounds() {

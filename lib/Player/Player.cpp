@@ -16,7 +16,9 @@
  */
 #include <Player.hpp>
 
-Player::Player(uint8_t id) : id(id), currentRound(0), totalShoots(5) {}
+Player::Player(uint8_t id) : id(id), currentRound(0), totalShoots(0) {
+  reset();
+}
 
 uint8_t Player::getTotalHitCount() const {
   uint8_t accumulator = 0;
