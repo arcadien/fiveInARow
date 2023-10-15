@@ -72,10 +72,10 @@ void expect_gui_to_display_player_info() {
 
   // clang-format off
   TestData testCases[4] = {
-    {Player(0), givenPlayerId: 0, givenRound: 0, givenHit: 1, "*Q5*",  "*W1*"},
-    {Player(1), givenPlayerId: 1, givenRound: 1, givenHit: 3, "*S10*", "*X3*"},
-    {Player(2), givenPlayerId: 2, givenRound: 3, givenHit: 4, "*D20*", "*C4*"},
-    {Player(3), givenPlayerId: 3, givenRound: 2, givenHit: 5, "*F15*", "*V5*"} 
+    {Player(0), givenPlayerId: 0, givenRound: 0, givenHit: 1, "*Q0*",  "*W1*"},
+    {Player(1), givenPlayerId: 1, givenRound: 1, givenHit: 3, "*S5*", "*X3*"},
+    {Player(2), givenPlayerId: 2, givenRound: 3, givenHit: 4, "*D15*", "*C4*"},
+    {Player(3), givenPlayerId: 3, givenRound: 2, givenHit: 5, "*F10*", "*V5*"} 
   };
   // clang-format on
   std::stringstream buffer;

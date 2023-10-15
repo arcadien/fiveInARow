@@ -58,6 +58,7 @@ void expect_game_to_be_restarted() {
 void expect_game_to_accept_succeeded_shoot_and_update_player_stats() {
   TestGui testGui;
   Game cut(&testGui);
+  
   cut.recordSucceededShoot();
 
   TEST_ASSERT_EQUAL_UINT8_MESSAGE(1, cut.players[0].hit[0],

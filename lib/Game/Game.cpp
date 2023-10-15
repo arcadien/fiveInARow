@@ -21,7 +21,8 @@ static const uint8_t TOTAL_ROUNDS = 20;
 
 Game::Game(IGui *gui) {
   this->gui = gui;
-  restart();
+  currentRound = 0;
+  currentPlayer = &players[0];
 }
 
 void Game::recordSucceededShoot() {
@@ -50,11 +51,10 @@ bool Game::isFinished() {
 }
 
 void Game::restart() {
-  for (Player& player : players) {
+  for (Player &player : players) {
     player.reset();
     gui->displayPlayerInfo(player);
   }
-  gui->restart();
   currentRound = 0;
   currentPlayer = &players[0];
 }

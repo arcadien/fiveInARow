@@ -25,14 +25,16 @@
 char serial_command_buffer_[32];
 SerialCommands serial_commands_(&Serial, serial_command_buffer_,
                                 sizeof(serial_command_buffer_), "|", " ");
+void cmd_unrecognized(SerialCommands *sender, const char *cmd);
 void cmd_resetTargets(SerialCommands *sender);
 void cmd_setThreshold(SerialCommands *sender);
 void cmd_nextRound(SerialCommands *sender);
-void cmd_unrecognized(SerialCommands *sender, const char *cmd);
+void cmd_changePlayer(SerialCommands *sender);
 
 SerialCommand cmd_nextRound_("N", &cmd_nextRound);
 SerialCommand cmd_resetTargets_("R", &cmd_resetTargets);
 SerialCommand cmd_setThreshold_("T", &cmd_setThreshold);
+SerialCommand cmd_changePlayer_("P", &cmd_changePlayer);
 
 void serialPrintInfo(uint16_t value);
 void ledOn();
@@ -48,7 +50,6 @@ BTEGui gui;
 Game game(&gui);
 
 void setup() {
-  Serial.begin(115200);
   pinMode(LED_PIN, OUTPUT);
   pinMode(LIGHT_MEASURE_PIN, INPUT);
   serial_commands_.SetDefaultHandler(cmd_unrecognized);
@@ -60,14 +61,17 @@ void setup() {
   reference = analogRead(LIGHT_MEASURE_PIN);
   threshold = 500;
 
-  cmd_resetTargets(nullptr);
+  Serial.begin(115200);
+  Serial.println("--- Laser target beta ---");
+  delay(1000);
+  game.restart();
+  gui.restart();
 }
 
 void loop() {
   uint16_t value = analogRead(A0);
   if (value > threshold) {
     serialPrintInfo(value);
-
     game.recordSucceededShoot();
     ledOn();
     delay(500);
@@ -80,12 +84,12 @@ void loop() {
 
 void serialPrintInfo(uint16_t value) {
   if (value > 0) {
-    Serial.print("HV: ");
+    Serial.print(F("HV: "));
     Serial.println(value);
   }
-  Serial.print("TV: ");
+  Serial.print(F("TV: "));
   Serial.println(threshold);
-  Serial.print("RV: ");
+  Serial.print(F("RV: "));
   Serial.println(reference);
 }
 void cmd_unrecognized(SerialCommands *sender, const char *cmd) {
@@ -98,8 +102,16 @@ void cmd_setThreshold(SerialCommands *sender) {
   uint16_t value = atoi(threshold_value);
   if (value > 0)
     threshold = value;
-  Serial.print("TV: ");
+  Serial.print(F("TV: "));
   Serial.println(threshold);
+}
+
+void cmd_changePlayer(SerialCommands *sender) {
+  uint8_t playerId = (uint8_t) int(sender->Next());
+  // game.changeCurrentPlayerTo(playerId);
+  game.nextRound();
+  Serial.print(F("Player changed to :"));
+  Serial.println(playerId);
 }
 
 void cmd_resetTargets(SerialCommands *sender) {
