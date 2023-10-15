@@ -24,33 +24,42 @@ void setUp() {}
 
 void expect_player_to_have_5_shots_at_beginning() {
   Player p(0);
-  TEST_ASSERT_EQUAL_UINT8_MESSAGE(0, p.totalShoots,
-                                  "Player begins with 0 shoots");
-  p.nextRound();
+  p.startRound();
   TEST_ASSERT_EQUAL_UINT8_MESSAGE(5, p.totalShoots,
-                                  "Shoots are incremented when round ends");
+                                  "Player first round begins with 5 shoots");
+  p.endRound();
+
+  TEST_ASSERT_EQUAL_UINT8_MESSAGE(5, p.totalShoots,
+                                  "Shoots are only incremented when round starts");
 }
+
 void expect_met_count_to_spread_well_on_five_rounds() {
   Player p(0);
 
   // round 0
+  p.startRound();
   p.recordSucceededShoot();
-  p.nextRound();
+  p.endRound();
 
   // round 1
+  p.startRound();
   p.recordSucceededShoot();
-  p.nextRound();
+  p.endRound();
 
   // round 2
+  p.startRound();
   p.recordSucceededShoot();
-  p.nextRound();
+  p.endRound();
 
   // round 3
+  p.startRound();
   p.recordSucceededShoot();
-  p.nextRound();
+  p.endRound();
 
   // round 4
+  p.startRound();
   p.recordSucceededShoot();
+  p.endRound();
 
   TEST_ASSERT_EQUAL_UINT8_MESSAGE(
       5, p.getTotalHitCount(), "Met shots shall be collected from all rounds");
@@ -58,6 +67,7 @@ void expect_met_count_to_spread_well_on_five_rounds() {
 
 void expect_a_player_to_stop_counting_hit_after_5_in_a_round() {
   Player p(0);
+  p.startRound();
   p.recordSucceededShoot();
   p.recordSucceededShoot();
   p.recordSucceededShoot();
@@ -69,14 +79,15 @@ void expect_a_player_to_stop_counting_hit_after_5_in_a_round() {
   p.recordSucceededShoot();
   p.recordSucceededShoot();
 
-  TEST_ASSERT_EQUAL_UINT8_MESSAGE(
-      5, p.getTotalHitCount(), "Hit shots shall not exceed 5 in a round");
-  
-  p.nextRound();
+  TEST_ASSERT_EQUAL_UINT8_MESSAGE(5, p.getTotalHitCount(),
+                                  "Hit shots shall not exceed 5 in a round");
+
+  p.endRound();
   p.recordSucceededShoot();
 
-    TEST_ASSERT_EQUAL_UINT8_MESSAGE(
-      6, p.getTotalHitCount(), "After switching to a new round, hit count resumes");
+  TEST_ASSERT_EQUAL_UINT8_MESSAGE(
+      6, p.getTotalHitCount(),
+      "After switching to a new round, hit count resumes");
 }
 
 int main(int, char **) {

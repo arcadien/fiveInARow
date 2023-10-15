@@ -23,9 +23,7 @@
  */
 class Player {
 
-
 public:
-
   static const uint8_t ROUND_COUNT = 5;
   static const uint8_t MAX_HIT_IN_A_ROUND = 5;
 
@@ -35,10 +33,11 @@ public:
   uint8_t totalShoots;
 
   Player(uint8_t id);
-  
-  uint8_t getTotalHitCount() const; 
+
+  uint8_t getTotalHitCount() const;
 
   void reset();
-  void nextRound();
+  void startRound();
+  void endRound();
   void recordSucceededShoot();
 };

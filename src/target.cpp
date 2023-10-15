@@ -72,6 +72,7 @@ void loop() {
   uint16_t value = analogRead(A0);
   if (value > threshold) {
     serialPrintInfo(value);
+    gui.hitTarget(IGui::TARGET::One);
     game.recordSucceededShoot();
     ledOn();
     delay(500);
@@ -97,6 +98,7 @@ void cmd_unrecognized(SerialCommands *sender, const char *cmd) {
   sender->GetSerial()->print(cmd);
   sender->GetSerial()->println("]");
 }
+
 void cmd_setThreshold(SerialCommands *sender) {
   char *threshold_value = sender->Next();
   uint16_t value = atoi(threshold_value);
@@ -126,7 +128,10 @@ void cmd_resetTargets(SerialCommands *sender) {
   delay(2000);
   ledOff();
 }
-void cmd_nextRound(SerialCommands *sender) { game.nextRound(); }
+void cmd_nextRound(SerialCommands *sender) { 
+  gui.resetTargets();
+  game.nextRound(); 
+  }
 
 void ledOff() { digitalWrite(LED_PIN, HIGH); }
 void ledOn() { digitalWrite(LED_PIN, LOW); }

@@ -47,7 +47,13 @@ bool BTEGui::isTargetHit(IGui::TARGET target) {
   return ((targetState & (1 << target)) == (1 << target));
 }
 
-void BTEGui::resetTargets() { targetState = 0; }
+void BTEGui::resetTargets() {
+  targetState = 0;
+  for (char letter : TARGET_APP_LETTERS) {
+    sprintf(stringBuffer, "*%cR0G0B0*", letter);
+    _output(stringBuffer);
+  }
+}
 
 void BTEGui::displayPlayerInfo(const Player &player) {
 
@@ -71,20 +77,20 @@ static void sendApplication() {
 
   // targets
   Serial.println(F("add_led(2,1,2,A,0,0,0)"));
-  Serial.println(F("add_led(6,1,2,B,0,0,0)"));
-  Serial.println(F("add_led(10,1,2,C,0,0,0)"));
-  Serial.println(F("add_led(14,1,2,D,0,0,0)"));
-  Serial.println(F("add_led(18,1,2,E,0,0,0)"));
+  Serial.println(F("add_led(6,1,2,Z,0,0,0)"));
+  Serial.println(F("add_led(10,1,2,E,0,0,0)"));
+  Serial.println(F("add_led(14,1,2,R,0,0,0)"));
+  Serial.println(F("add_led(18,1,2,T,0,0,0)"));
 
   // Shoot row
-  Serial.println(F("add_text_box(0,5,2,L,Shoot,245,240,245,)"));
+  Serial.println(F("add_text(0,5,large,L,Shoot,245,240,245,)"));
   Serial.println(F("add_text_box(4,5,1,L,0,245,240,245,Q)"));
   Serial.println(F("add_text_box(8,5,1,L,0,245,240,245,S)"));
   Serial.println(F("add_text_box(12,5,1,L,0,245,240,245,D)"));
   Serial.println(F("add_text_box(16,5,1,L,0,245,240,245,F)"));
 
   // Hit row
-  Serial.println(F("add_text_box(0,6,2,L,Hit,245,240,245,)"));
+  Serial.println(F("add_text(0,6,large,L,Hit,245,240,245,)"));
   Serial.println(F("add_text_box(4,6,1,L,0,245,240,245,W)"));
   Serial.println(F("add_text_box(8,6,1,L,0,245,240,245,X)"));
   Serial.println(F("add_text_box(12,6,1,L,0,245,240,245,C)"));
@@ -96,7 +102,7 @@ static void sendApplication() {
   Serial.println(F("add_button(12,4,14,R,r)"));
   Serial.println(F("add_button(16,4,17,B,b)"));
 
-  Serial.println(F("add_text_box(18,4,3,L,Next,245,240,245,)"));
+  Serial.println(F("add_text(19,4,large,L,Next,245,240,245,)"));
   Serial.println(F("add_button(19,5,25,N,|)"));
 
   Serial.println(F("add_button(0,8,30,R,|)"));
@@ -113,13 +119,10 @@ static void sendApplication() {}
 
 void BTEGui::restart() {
   sendApplication();
-  for (char letter : TARGET_APP_LETTERS) {
-    sprintf(stringBuffer, "*%cR0G0B0*", letter);
-    _output(stringBuffer);
-  }
+  resetTargets();
 }
 
-const char BTEGui::TARGET_APP_LETTERS[5] = {'A', 'B', 'C', 'D', 'E'};
+const char BTEGui::TARGET_APP_LETTERS[5] = {'A', 'Z', 'E', 'R', 'T'};
 const char BTEGui::PLAYER_DATA_APP_LETTERS[8] = {
     'Q', 'W', // player 1
     'S', 'X', // player 2

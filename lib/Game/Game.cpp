@@ -35,6 +35,9 @@ void Game::recordSucceededShoot() {
  * Note: loop on player 4
  */
 void Game::nextRound() {
+  
+  currentPlayer->endRound();
+
   currentRound++;
   uint8_t playerId = currentPlayer->id;
   auto nextPlayerId = 0;
@@ -42,7 +45,9 @@ void Game::nextRound() {
     nextPlayerId = playerId + 1;
   }
   currentPlayer = &players[nextPlayerId];
-  currentPlayer->nextRound();
+  
+  currentPlayer->startRound();
+  
 }
 
 bool Game::isFinished() {

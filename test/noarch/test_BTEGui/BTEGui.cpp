@@ -38,14 +38,31 @@ void expect_target_to_manage_5_targets() {
 
   cut.hitTarget(IGui::TARGET::Two);
 
-  expectedLine = "*BR255G255B255*";
+  expectedLine = "*ZR255G255B255*";
   std::getline(fakeSerial, actual);
   TEST_ASSERT_EQUAL_STRING_MESSAGE(expectedLine.c_str(), actual.c_str(),
                                    "Hit target shall be white");
 
   cut.hitTarget(IGui::TARGET::Three);
+
+  expectedLine = "*ER255G255B255*";
+  std::getline(fakeSerial, actual);
+  TEST_ASSERT_EQUAL_STRING_MESSAGE(expectedLine.c_str(), actual.c_str(),
+                                   "Hit target shall be white");
+
   cut.hitTarget(IGui::TARGET::Four);
+
+  expectedLine = "*RR255G255B255*";
+  std::getline(fakeSerial, actual);
+  TEST_ASSERT_EQUAL_STRING_MESSAGE(expectedLine.c_str(), actual.c_str(),
+                                   "Hit target shall be white");
+
   cut.hitTarget(IGui::TARGET::Five);
+
+  expectedLine = "*TR255G255B255*";
+  std::getline(fakeSerial, actual);
+  TEST_ASSERT_EQUAL_STRING_MESSAGE(expectedLine.c_str(), actual.c_str(),
+                                   "Hit target shall be white");
 
   TEST_ASSERT_TRUE(cut.isTargetHit(IGui::TARGET::One));
   TEST_ASSERT_TRUE(cut.isTargetHit(IGui::TARGET::Two));
@@ -72,8 +89,8 @@ void expect_gui_to_display_player_info() {
 
   // clang-format off
   TestData testCases[4] = {
-    {Player(0), givenPlayerId: 0, givenRound: 0, givenHit: 1, "*Q0*",  "*W1*"},
-    {Player(1), givenPlayerId: 1, givenRound: 1, givenHit: 3, "*S5*", "*X3*"},
+    {Player(0), givenPlayerId: 0, givenRound: 1, givenHit: 1, "*Q5*",  "*W1*"},
+    {Player(1), givenPlayerId: 1, givenRound: 2, givenHit: 3, "*S10*", "*X3*"},
     {Player(2), givenPlayerId: 2, givenRound: 3, givenHit: 4, "*D15*", "*C4*"},
     {Player(3), givenPlayerId: 3, givenRound: 2, givenHit: 5, "*F10*", "*V5*"} 
   };
@@ -86,8 +103,11 @@ void expect_gui_to_display_player_info() {
     TEST_ASSERT_EQUAL_UINT8(currentPlayer->id, testCase.givenPlayerId);
 
     for (uint8_t round = 0; round < testCase.givenRound; round++) {
-      currentPlayer->nextRound();
+      currentPlayer->startRound();
+      currentPlayer->endRound();
     }
+
+    // note: for simplicity sake, all hits are recorded in the last round
     for (uint8_t hit = 0; hit < testCase.givenHit; hit++) {
       currentPlayer->recordSucceededShoot();
     }
@@ -96,7 +116,6 @@ void expect_gui_to_display_player_info() {
     std::string actual;
     std::getline(fakeSerial, actual);
 
-    
     buffer << "( Player ";
     buffer << unsigned(testCase.givenPlayer.id) << "  total shoots)"
            << std::endl;

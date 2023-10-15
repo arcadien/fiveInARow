@@ -34,12 +34,16 @@ void Player::reset() {
   }
   currentRound = 0;
 }
-void Player::nextRound() {
+
+void Player::startRound() {
+  totalShoots += 5;
+}
+
+void Player::endRound() {
   currentRound = 0;
   if (currentRound < (ROUND_COUNT - 1)) {
     currentRound++;
   }
-  totalShoots += 5;
 }
 
 void Player::recordSucceededShoot() {
