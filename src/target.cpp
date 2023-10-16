@@ -173,6 +173,7 @@ void cmd_resetTargets(SerialCommands *sender) {
 void cmd_nextRound(SerialCommands *sender) {
   gui.resetTargets();
   game.nextRound();
+  gui.setCurrentPlayer(game.currentPlayer->id);
 }
 
 void ledOff() { digitalWrite(LED_PIN, HIGH); }
