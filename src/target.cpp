@@ -19,7 +19,12 @@
 #include <Game.hpp>
 #include <SerialCommands.h>
 
-#define LIGHT_MEASURE_PIN A0
+#define TARGET_A_PIN A0
+#define TARGET_Z_PIN A1
+#define TARGET_E_PIN A2
+#define TARGET_R_PIN A3
+#define TARGET_T_PIN A4
+
 #define LED_PIN 9
 
 char serial_command_buffer_[32];
@@ -50,37 +55,75 @@ BTEGui gui;
 Game game(&gui);
 
 void setup() {
+
   pinMode(LED_PIN, OUTPUT);
-  pinMode(LIGHT_MEASURE_PIN, INPUT);
+  ledOff();
+  
+  pinMode(TARGET_A_PIN, INPUT);
+  pinMode(TARGET_Z_PIN, INPUT);
+  pinMode(TARGET_E_PIN, INPUT);
+  pinMode(TARGET_R_PIN, INPUT);
+  pinMode(TARGET_T_PIN, INPUT);
+
   serial_commands_.SetDefaultHandler(cmd_unrecognized);
   serial_commands_.AddCommand(&cmd_resetTargets_);
   serial_commands_.AddCommand(&cmd_setThreshold_);
   serial_commands_.AddCommand(&cmd_nextRound_);
 
-  analogRead(LIGHT_MEASURE_PIN);
-  reference = analogRead(LIGHT_MEASURE_PIN);
+  analogRead(TARGET_A_PIN);
+  analogRead(TARGET_Z_PIN);
+  analogRead(TARGET_E_PIN);
+  analogRead(TARGET_R_PIN);
+  analogRead(TARGET_T_PIN);
+
+  reference = 0;
+  reference += analogRead(TARGET_A_PIN);
+  reference += analogRead(TARGET_Z_PIN);
+  reference += analogRead(TARGET_E_PIN);
+  reference += analogRead(TARGET_R_PIN);
+  reference += analogRead(TARGET_T_PIN);
+  reference /= 5;
+
   threshold = 500;
 
   Serial.begin(115200);
   Serial.println("--- Laser target beta ---");
   delay(1000);
-  game.restart();
-  gui.restart();
+  game.reset();  
+}
+
+static void _recordHit() {
+  game.recordSucceededShoot();
+  ledOn();
+  delay(100);
+  ledOff();
+}
+
+static void _checkHit(uint16_t value, IGui::TARGET target) {
+  if (value > threshold) {
+    if (!gui.isTargetHit(target)) {
+      gui.hitTarget(target);
+      _recordHit();
+    }
+  }
 }
 
 void loop() {
-  uint16_t value = analogRead(A0);
-  if (value > threshold) {
-    serialPrintInfo(value);
-    gui.hitTarget(IGui::TARGET::One);
-    game.recordSucceededShoot();
-    ledOn();
-    delay(500);
-    ledOff();
-  } else {
-    serial_commands_.ReadSerial();
-    delay(10);
-  }
+
+  uint16_t value1 = analogRead(A0);
+  uint16_t value2 = analogRead(A1);
+  uint16_t value3 = analogRead(A2);
+  uint16_t value4 = 0; // analogRead(A3);
+  uint16_t value5 = 0; // analogRead(A4);
+
+  _checkHit(value1, IGui::TARGET::One);
+  _checkHit(value2, IGui::TARGET::Two);
+  _checkHit(value3, IGui::TARGET::Three);
+  _checkHit(value4, IGui::TARGET::Four);
+  _checkHit(value5, IGui::TARGET::Five);
+
+  serial_commands_.ReadSerial();
+  delay(10);
 }
 
 void serialPrintInfo(uint16_t value) {
@@ -119,19 +162,20 @@ void cmd_changePlayer(SerialCommands *sender) {
 void cmd_resetTargets(SerialCommands *sender) {
 
   (void)sender;
-
-  ledOn();
-
-  game.restart();
-
+  game.reset();
   serialPrintInfo(0);
-  delay(2000);
+  ledOn();
+  delay(200);
+  ledOff();
+  delay(200);
+  ledOn();
+  delay(200);
   ledOff();
 }
-void cmd_nextRound(SerialCommands *sender) { 
+void cmd_nextRound(SerialCommands *sender) {
   gui.resetTargets();
-  game.nextRound(); 
-  }
+  game.nextRound();
+}
 
 void ledOff() { digitalWrite(LED_PIN, HIGH); }
 void ledOn() { digitalWrite(LED_PIN, LOW); }
