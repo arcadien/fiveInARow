@@ -29,10 +29,12 @@ uint8_t Player::getTotalHitCount() const {
 }
 
 void Player::reset() {
+  // Note: this loop uses less asm code than memset() (release -Os)
   for (uint8_t index = 0; index < ROUND_COUNT; index++) {
     hit[index] = 0;
   }
   currentRound = 0;
+  totalShoots = 0;
 }
 
 void Player::startRound() {
