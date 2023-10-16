@@ -46,6 +46,11 @@ class BTEGui : public IGui {
    */
   static const char PLAYER_DATA_APP_LETTERS[8];
 
+  /**
+   * On that GUI, each 4 player has a color
+   */
+  static const char *PLAYER_COLORS[4];
+
   void _output(const char *message);
 
 public:
@@ -56,6 +61,7 @@ public:
   BTEGui(std::ostream &out) : targetState(0), out(out) {}
 #endif
 
+  void setCurrentPlayer(uint8_t playerId) override;
   void hitTarget(IGui::TARGET target) override;
   bool isTargetHit(IGui::TARGET target) override;
   void resetTargets() override;

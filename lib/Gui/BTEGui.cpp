@@ -55,6 +55,13 @@ void BTEGui::resetTargets() {
   }
 }
 
+void BTEGui::setCurrentPlayer(uint8_t playerId) {
+  if (playerId < 4) {
+    sprintf(stringBuffer, "*M%s*", PLAYER_COLORS[playerId]);
+    _output(stringBuffer);
+  }
+}
+
 void BTEGui::displayPlayerInfo(const Player &player) {
 
   uint8_t baseIndex = player.id * 2;
@@ -74,6 +81,11 @@ static void sendApplication() {
   Serial.println(F("*.kwl"));
   Serial.println(F("clear_panel()"));
   Serial.println(F("set_grid_size(21,10)"));
+
+  // current player
+  Serial.println(
+      F("add_text(4,8,xlarge,L,Current player: , 245, 240, 245,)"));
+  Serial.println(F("add_text(10,8,xlarge,C,1,245,240,245,M)"));
 
   // targets
   Serial.println(F("add_led(2,1,2,A,0,0,0)"));
@@ -97,16 +109,16 @@ static void sendApplication() {
   Serial.println(F("add_text_box(16,6,1,L,0,245,240,245,V)"));
 
   // color buttons for players
-  Serial.println(F("add_button(4,4,15,Y,y)"));
-  Serial.println(F("add_button(8,4,16,G,g)"));
-  Serial.println(F("add_button(12,4,14,R,r)"));
-  Serial.println(F("add_button(16,4,17,B,b)"));
+  Serial.println(F("add_button(4,4,15,,P 0 |)"));
+  Serial.println(F("add_button(8,4,16,,P 1 |)"));
+  Serial.println(F("add_button(12,4,14,,P 2 |)"));
+  Serial.println(F("add_button(16,4,17,,P 3 |)"));
 
   Serial.println(F("add_text(19,4,large,L,Next,245,240,245,)"));
   Serial.println(F("add_button(19,5,25,N,|)"));
 
   Serial.println(F("add_button(0,8,30,R,|)"));
-  Serial.println(F("add_slider(10,9,8,200,800,449,T ,|,1)"));
+  Serial.println(F("add_slider(10,9,8,200,800,500,T ,|,1)"));
 
   Serial.println(F("add_monitor(18,8,3,,1)"));
   Serial.println(F("set_panel_notes(-,,,)"));
@@ -122,6 +134,7 @@ void BTEGui::restart() {
   resetTargets();
 }
 
+const char *BTEGui::PLAYER_COLORS[] = {"Yellow", "Green", "Red", "Blue"};
 const char BTEGui::TARGET_APP_LETTERS[5] = {'A', 'Z', 'E', 'R', 'T'};
 const char BTEGui::PLAYER_DATA_APP_LETTERS[8] = {
     'Q', 'W', // player 1

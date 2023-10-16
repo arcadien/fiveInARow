@@ -31,6 +31,7 @@ public:
     return (targetState & (1 << target) == (1 << target));
   }
 
+  void setCurrentPlayer(uint8_t playerId) override {}
   void restart() override {}
   void resetTargets() override { targetState = 0; }
   void displayPlayerInfo(const Player &player) override {}

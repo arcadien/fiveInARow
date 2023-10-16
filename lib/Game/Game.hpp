@@ -48,6 +48,12 @@ public:
   void recordSucceededShoot();
 
   /**
+   * Change current player
+   * playerIndex shall be [0;3]
+   */
+  void changeCurrentPlayerTo(uint8_t playerIndex);
+
+  /**
    * End current player round, and initiate next player round
    */
   void nextRound();
