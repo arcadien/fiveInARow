@@ -58,5 +58,5 @@ public:
    */
   bool isFinished();
 
-  void restart();
+  void reset();
 };
