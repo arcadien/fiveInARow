@@ -45,6 +45,8 @@ public:
   */
   virtual void resetTargets() = 0;
 
+  virtual void setCurrentPlayer(uint8_t playerId) = 0;
+
   /*
   * Send player info : id, shoots and hit shoots
   *

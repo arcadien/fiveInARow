@@ -55,6 +55,17 @@ bool Game::isFinished() {
   return currentRound > TOTAL_ROUNDS - 1;
 }
 
+void Game::changeCurrentPlayerTo(uint8_t playerIndex) {
+  if (playerIndex < PLAYER_COUNT) {
+    currentPlayer->endRound();
+    currentPlayer = &players[playerIndex];
+    currentPlayer->startRound();
+    gui->setCurrentPlayer(playerIndex);
+    gui->resetTargets();
+    gui->displayPlayerInfo(*currentPlayer);
+  }
+}
+
 void Game::reset() {
   gui->restart();
   for (Player &player : players) {
@@ -65,4 +76,5 @@ void Game::reset() {
   currentPlayer = &players[0];
   currentPlayer->startRound();
   gui->displayPlayerInfo(*currentPlayer);
+  gui->setCurrentPlayer(0);
 }
