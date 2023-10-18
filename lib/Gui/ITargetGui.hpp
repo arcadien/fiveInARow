@@ -19,7 +19,7 @@
 #include <stdint.h>
 #include <Player.hpp>
 
-class IGui {
+class ITargetGui {
 public:
 
   enum TARGET{

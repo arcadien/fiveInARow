@@ -16,7 +16,7 @@
  */
 #pragma once
 
-#include <IGui.hpp>
+#include <ITargetGui.hpp>
 #include <stdint.h>
 
 #if defined(AVR)
@@ -28,7 +28,7 @@
 /**
  * GUI for Bluetooth Electronics interface (Android)
  */
-class BTEGui : public IGui {
+class BTEGui : public ITargetGui {
   uint8_t targetState;
 
   /* Bluetooth application uses a letter to identify which widget
@@ -62,8 +62,8 @@ public:
 #endif
 
   void setCurrentPlayer(uint8_t playerId) override;
-  void hitTarget(IGui::TARGET target) override;
-  bool isTargetHit(IGui::TARGET target) override;
+  void hitTarget(ITargetGui::TARGET target) override;
+  bool isTargetHit(ITargetGui::TARGET target) override;
   void resetTargets() override;
   void displayPlayerInfo(const Player &player) override;
   void restart() override;

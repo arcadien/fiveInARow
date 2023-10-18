@@ -16,7 +16,7 @@
  */
 #pragma once
 
-#include <IGui.hpp>
+#include <ITargetGui.hpp>
 #include <Player.hpp>
 
 #include <stdint.h>
@@ -26,7 +26,7 @@
  */
 class Game {
 
-  IGui *gui;
+  ITargetGui *gui;
 
 public:
   static const uint8_t PLAYER_COUNT = 4;
@@ -43,7 +43,7 @@ public:
   uint8_t currentRound;
   Player *currentPlayer;
 
-  Game(IGui *);
+  Game(ITargetGui *);
 
   void recordSucceededShoot();
 

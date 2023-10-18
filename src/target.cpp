@@ -105,7 +105,7 @@ static void _recordHit() {
   ledOff();
 }
 
-static void _checkHit(uint16_t value, IGui::TARGET target) {
+static void _checkHit(uint16_t value, ITargetGui::TARGET target) {
   if (value > threshold) {
     if (!gui.isTargetHit(target)) {
       gui.hitTarget(target);
@@ -122,11 +122,11 @@ void loop() {
   uint16_t value4 = 0; // analogRead(A3);
   uint16_t value5 = 0; // analogRead(A4);
 
-  _checkHit(value1, IGui::TARGET::One);
-  _checkHit(value2, IGui::TARGET::Two);
-  _checkHit(value3, IGui::TARGET::Three);
-  _checkHit(value4, IGui::TARGET::Four);
-  _checkHit(value5, IGui::TARGET::Five);
+  _checkHit(value1, ITargetGui::TARGET::One);
+  _checkHit(value2, ITargetGui::TARGET::Two);
+  _checkHit(value3, ITargetGui::TARGET::Three);
+  _checkHit(value4, ITargetGui::TARGET::Four);
+  _checkHit(value5, ITargetGui::TARGET::Five);
 
   serial_commands_.ReadSerial();
   delay(10);

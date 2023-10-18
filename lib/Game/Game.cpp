@@ -19,7 +19,7 @@
 // 5 rounds per player
 static const uint8_t TOTAL_ROUNDS = 20;
 
-Game::Game(IGui *gui) {
+Game::Game(ITargetGui *gui) {
   this->gui = gui;
   currentRound = 0;
   currentPlayer = &players[0];

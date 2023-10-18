@@ -15,19 +15,19 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 #pragma once
-#include <IGui.hpp>
+#include <ITargetGui.hpp>
 #include <cstdint>
 
-class TestGui : public IGui {
+class TestGui : public ITargetGui {
 
 public:
   uint8_t targetState;
 
   TestGui() : targetState(0) {}
 
-  void hitTarget(IGui::TARGET target) override { targetState |= (1 << target); }
+  void hitTarget(ITargetGui::TARGET target) override { targetState |= (1 << target); }
 
-  bool isTargetHit(IGui::TARGET target) override {
+  bool isTargetHit(ITargetGui::TARGET target) override {
     return (targetState & (1 << target) == (1 << target));
   }
 

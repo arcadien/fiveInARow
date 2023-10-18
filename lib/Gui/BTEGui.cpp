@@ -35,7 +35,7 @@ void BTEGui::_output(const char *message) {
 #endif
 }
 
-void BTEGui::hitTarget(IGui::TARGET target) {
+void BTEGui::hitTarget(ITargetGui::TARGET target) {
   targetState |= (1 << target);
   char letter = TARGET_APP_LETTERS[(uint8_t)target];
 
@@ -43,7 +43,7 @@ void BTEGui::hitTarget(IGui::TARGET target) {
   _output(stringBuffer);
 }
 
-bool BTEGui::isTargetHit(IGui::TARGET target) {
+bool BTEGui::isTargetHit(ITargetGui::TARGET target) {
   return ((targetState & (1 << target)) == (1 << target));
 }
 
