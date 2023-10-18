@@ -1,21 +1,27 @@
 # fiveTargetGame
-"Biathlon" like game, with 5-target embedded firmware, gun firmware and Android BT application
 
-if this error appears:
-```
-avrdude: Version 6.3, compiled on Sep 12 2016 at 15:21:49
-         Copyright (c) 2000-2005 Brian Dean, http://www.bdmicro.com/
-         Copyright (c) 2007-2014 Joerg Wunsch
+Set of two applications targetting Microchip AVR chips, implementing shooting game.
+The game is made of two parts: the *gun* and the *targets*.
+There is up to four players, trying to shoot five targets in a row, using 5 tries.
 
-         System wide configuration file is "/home/jenkins/workspace/avrdude/label/Ubuntu12.04x64/objdir/etc/avrdude.conf"
-avrdude: can't open config file "/home/jenkins/workspace/avrdude/label/Ubuntu12.04x64/objdir/etc/avrdude.conf": No such file or directory
-avrdude: error reading system wide configuration file "/home/jenkins/workspace/avrdude/label/Ubuntu12.04x64/objdir/etc/avrdude.conf"
-```
-it is a bug in Avrdude. Open `/.platformio/packages/tool-avrdude/avrdude` and change:
-```
-exec -a "$0" "`dirname "$0"`/avrdude_bin" "$@"
-```
-by
-```
-exec -a "$0" "`dirname "$0"`/avrdude_bin" "-C${HOME}/.platformio/packages/tool-avrdude/avrdude.conf" "$@"
-```
+At some point, games ends and the player with best shot/hit ratio wins the game.
+
+## target
+The **target** application manages player points and communicate with an Android application implemented on top of [Bluetooth Electronics](https://www.keuwl.com/apps/bluetoothelectronics/) application. It manages the game logic and player points.
+
+
+## Gun
+The **Gun** application manages the gun. Using two buttons, it allows:
+
+| Press |      Button 1    |             Button 2           |
+|-------|------------------|--------------------------------|
+| short | power on / shoot | Begin new round (give 5 shots) |
+| long  |     power off    | continuous laser (calibration) |
+
+Gun application manages following outputs:
+* Laser
+* vibrator
+* led
+
+For more details of gun logic, see test cases.
+
