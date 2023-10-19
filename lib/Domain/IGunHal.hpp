@@ -18,8 +18,9 @@
 
 class IGunHal {
 public:
-  virtual void isButton1Pressed() = 0;
-  virtual void isButton2Pressed() = 0;
+  virtual ~IGunHal() {}
+  virtual bool isButton1Pressed() = 0;
+  virtual bool isButton2Pressed() = 0;
   virtual void shortDelay() = 0;
   virtual void longDelay() = 0;
   virtual void ledOn() = 0;
@@ -27,6 +28,6 @@ public:
   virtual void laserOn() = 0;
   virtual void laserOff() = 0;
   virtual void vibrationOn() = 0;
-  virtual void vibrationOff() = 0; 
-  virtual void deepSleep() = 0; 
+  virtual void vibrationOff() = 0;
+  virtual void deepSleep() = 0;
 };
