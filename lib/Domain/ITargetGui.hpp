@@ -30,6 +30,8 @@ public:
     Five
   };
   
+  virtual ~ITargetGui() {}
+
   /**
    * Tell GUI a target has been hit
   */
