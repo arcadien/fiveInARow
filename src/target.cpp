@@ -82,12 +82,9 @@ void setup() {
   reference += analogRead(TARGET_A_PIN);
   reference += analogRead(TARGET_Z_PIN);
   reference += analogRead(TARGET_E_PIN);
-  reference /= 3;
-
-  // not yet connected
-  //reference += analogRead(TARGET_R_PIN);
-  //reference += analogRead(TARGET_T_PIN);
-  //reference /= 5;
+  reference += analogRead(TARGET_R_PIN);
+  reference += analogRead(TARGET_T_PIN);
+  reference /= 5;
 
   // initial value sent by GUI at startup
   threshold = 500; 
@@ -119,8 +116,8 @@ void loop() {
   uint16_t value1 = analogRead(A0);
   uint16_t value2 = analogRead(A1);
   uint16_t value3 = analogRead(A2);
-  uint16_t value4 = 0; // analogRead(A3);
-  uint16_t value5 = 0; // analogRead(A4);
+  uint16_t value4 = analogRead(A3);
+  uint16_t value5 = analogRead(A4);
 
   _checkHit(value1, ITargetGui::TARGET::One);
   _checkHit(value2, ITargetGui::TARGET::Two);
@@ -129,7 +126,7 @@ void loop() {
   _checkHit(value5, ITargetGui::TARGET::Five);
 
   serial_commands_.ReadSerial();
-  delay(10);
+  delay(5);
 }
 
 void serialPrintInfo(uint16_t value) {
