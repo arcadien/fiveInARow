@@ -32,19 +32,19 @@ jobs:
       - name: Build 'gun' cross application
         run: pio run -e gun
 
-      - name: Archive code coverage results
+      - name: Archive test console application
         uses: actions/upload-artifact@v3
         with:
           name: consoleApp
           path: ./.pio/build/native/program
 
-      - name: Archive code coverage results
+      - name: Archive targets host application
         uses: actions/upload-artifact@v3
         with:
           name: target.hex
           path: .pio/build/target/firmware.hex
 
-      - name: Archive code coverage results
+      - name: Archive gun application
         uses: actions/upload-artifact@v3
         with:
           name: gun.hex
