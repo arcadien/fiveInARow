@@ -16,7 +16,7 @@
  */
 #pragma once
 #include <ITargetGui.hpp>
-#include <cstdint>
+#include <stdint.h>
 
 class TestGui : public ITargetGui {
 
@@ -28,7 +28,7 @@ public:
   void hitTarget(ITargetGui::TARGET target) override { targetState |= (1 << target); }
 
   bool isTargetHit(ITargetGui::TARGET target) override {
-    return (targetState & (1 << target) == (1 << target));
+    return ( (targetState & (1 << target)) == (1 << target));
   }
 
   void setCurrentPlayer(uint8_t playerId) override {}

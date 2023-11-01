@@ -16,7 +16,6 @@
  */
 
 #include <BTEGui.hpp>
-#include <exception>
 #include <iostream>
 #include <sstream>
 #include <unity.h>

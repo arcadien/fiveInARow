@@ -19,9 +19,7 @@
 #include <ITargetGui.hpp>
 #include <stdint.h>
 
-#if defined(AVR)
-#include <Arduino.h>
-#else
+#if not defined(AVR)
 #include <ostream>
 #endif
 
