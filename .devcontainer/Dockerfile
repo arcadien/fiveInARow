@@ -21,6 +21,7 @@ RUN apt-get update \
     python3-setuptools \
     srecord \
     udev \
+    socat \
     xz-utils \
     && apt-get autoremove -y \
     && apt-get clean -y \
