@@ -1,4 +1,4 @@
-# fiveTargetGame
+# Five In A Row
 
 Set of two applications targetting Atmel/Microchip [ATMega328P](https://www.microchip.com/en-us/product/atmega328p), implementing shooting game.
 
