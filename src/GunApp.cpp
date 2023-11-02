@@ -90,11 +90,15 @@ ISR(TIMER2_COMPA_vect) {
 }
 
 static void displayShootCount() {
-  display.fillRect(25, 0, 49, 30, 0); // clear
+  display.fillRect(11, 0, 68, 30, 0); // clear
+
+  if (shootCount > 999)
+    shootCount = 0;
+
   if (shootCount < 10) {
-    display.setCursor(35, 25);
+    display.setCursor(15, 25);
   } else {
-    display.setCursor(30, 25);
+    display.setCursor(10, 25);
   }
   display.print(shootCount);
   display.display();
