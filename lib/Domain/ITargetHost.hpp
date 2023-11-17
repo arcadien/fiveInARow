@@ -18,17 +18,60 @@
 
 #include <stdint.h>
 
+enum TargetState { Calibrating, Ready, Hit };
+enum Color { None, Red, Green, Blue };
+
+class ITargetHal {
+
+  virtual uint16_t getLuminosity() = 0;
+  virtual void setLedColor(Color color) = 0;
+};
+
 /**
  * A target is considered hit if its
  * luminosity value exceed (ambientValue + threshold)
+ * A target has a multicolor led: Off is ready, green is shot, blue is
+ * calibration, red is error
  */
-class Target {
+class Target : public ITargetHal {
+
+  TargetState state;
+  uint8_t luminosityPin;
+
 public:
   uint16_t ambientValue;
-  bool isHit;
-  uint8_t pin;
   uint8_t index;
-  Target() : ambientValue(0), isHit(false), pin(0) {}
+  Target(uint8_t luminosityPin luminosityPin)
+      : ambientValue(0), luminosityPin(luminosityPin) {
+    ready();
+  }
+
+  TargetState getState() { return state; }
+
+  void hit() {
+    state = Hit;
+    setLedColor(Green);
+  }
+
+  void ready() {
+    state = Ready;
+    setLedColor(None);
+  }
+
+  void calibrate() {
+    state = Calibrating;
+    setLedColor(Blue);
+    getLuminosity();
+    ambientValue = getLuminosity();
+    ambientValue += getLuminosity();
+    ambientValue += getLuminosity();
+    ambientValue += getLuminosity();
+    ambientValue /= 4;
+    ready();
+  }
+
+  uint16_t getLuminosity() override { return analogRead(luminosityPin); }
+  void setLedColor(Color color) override{};
 };
 
 class ITargetHost {
