@@ -118,7 +118,7 @@ static void sendApplication() {
   Serial.println(F("add_button(19,5,25,N,|)"));
 
   Serial.println(F("add_button(0,8,30,R,|)"));
-  Serial.println(F("add_slider(10,9,8,200,800,500,T ,|,1)"));
+  Serial.println(F("add_slider(10,9,8,100,1024,500,T ,|,1)"));
 
   Serial.println(F("add_monitor(18,8,3,,1)"));
   Serial.println(F("set_panel_notes(-,,,)"));
