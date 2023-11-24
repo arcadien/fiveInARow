@@ -21,7 +21,7 @@ jobs:
         run: pip install --upgrade platformio
 
       - name: Test project in native environment
-        run: pio test -e native
+        run: pio test -vv -e native
 
       - name: Build console application
         run: pio run -e native
