@@ -17,45 +17,45 @@
 #pragma once
 
 #include <stdint.h>
-#include <Player.hpp>
 
-class ITargetGui {
+/**
+ * A target is considered hit if its
+ * luminosity value exceed (ambientValue + threshold)
+ */
+class Target {
 public:
+  uint16_t ambientValue;
+  bool isHit;
+  uint8_t pin;
+  uint8_t index;
+  Target() : ambientValue(0), isHit(false), pin(0) {}
+};
 
-  enum TARGET{
-    One = 0,
-    Two,
-    Three,
-    Four,
-    Five
-  };
-  
-  virtual ~ITargetGui() {}
-
-  /**
-   * Tell GUI a target has been hit
-  */
-  virtual void hitTarget(TARGET) = 0;
+class ITargetHost {
+public:
+  virtual ~ITargetHost() {}
 
   /**
-   * Ask GUI if a target has been hit
-  */
-  virtual bool isTargetHit(TARGET) = 0;
+   * Return light intensity for given target
+   * value [0;1024]
+   */
+  virtual uint16_t getLightIntensityFor(const Target &target) = 0;
 
   /**
-   * Reset target hit status
-  */
+   * Return value of difference needed between ambient light level and hit light
+   * level value [0;254]
+   */
+  virtual uint8_t getThreshold() = 0;
+
   virtual void resetTargets() = 0;
 
-  virtual void setCurrentPlayer(uint8_t playerId) = 0;
+  /**
+   * Notification led
+   */
+  virtual void ledOn() = 0;
 
-  /*
-  * Send player info : id, shoots and hit shoots
-  *
-  *
-  */
-  virtual void displayPlayerInfo(const Player&) = 0;
-
-  virtual void restart() = 0;
-  
+  /**
+   * Notification led
+   */
+  virtual void ledOff() = 0;
 };

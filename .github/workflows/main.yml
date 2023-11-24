@@ -23,14 +23,14 @@ jobs:
       - name: Test project in native environment
         run: pio test -e native
 
-      - name: Build console application
+      - name: Build native console application
         run: pio run -e native
 
-      - name: Build 'target' cross application
-        run: pio run -e target
-        
-      - name: Build 'gun' cross application
+      - name: Build cross Gun application
         run: pio run -e gun
+
+      - name: Build cross Target application
+        run: pio run -e target
 
       - name: Archive test console application
         uses: actions/upload-artifact@v3

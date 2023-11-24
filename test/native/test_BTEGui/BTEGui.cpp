@@ -28,46 +28,46 @@ void expect_target_to_manage_5_targets() {
   BTEGui cut(fakeSerial);
   std::string actual;
 
-  cut.hitTarget(ITargetGui::TARGET::One);
+  cut.hitTarget(ITargetUi::TARGET::One);
 
   std::string expectedLine = "*AR255G255B255*";
   std::getline(fakeSerial, actual);
   TEST_ASSERT_EQUAL_STRING_MESSAGE(expectedLine.c_str(), actual.c_str(),
                                    "Hit target shall be white");
 
-  cut.hitTarget(ITargetGui::TARGET::Two);
+  cut.hitTarget(ITargetUi::TARGET::Two);
 
   expectedLine = "*ZR255G255B255*";
   std::getline(fakeSerial, actual);
   TEST_ASSERT_EQUAL_STRING_MESSAGE(expectedLine.c_str(), actual.c_str(),
                                    "Hit target shall be white");
 
-  cut.hitTarget(ITargetGui::TARGET::Three);
+  cut.hitTarget(ITargetUi::TARGET::Three);
 
   expectedLine = "*ER255G255B255*";
   std::getline(fakeSerial, actual);
   TEST_ASSERT_EQUAL_STRING_MESSAGE(expectedLine.c_str(), actual.c_str(),
                                    "Hit target shall be white");
 
-  cut.hitTarget(ITargetGui::TARGET::Four);
+  cut.hitTarget(ITargetUi::TARGET::Four);
 
   expectedLine = "*RR255G255B255*";
   std::getline(fakeSerial, actual);
   TEST_ASSERT_EQUAL_STRING_MESSAGE(expectedLine.c_str(), actual.c_str(),
                                    "Hit target shall be white");
 
-  cut.hitTarget(ITargetGui::TARGET::Five);
+  cut.hitTarget(ITargetUi::TARGET::Five);
 
   expectedLine = "*TR255G255B255*";
   std::getline(fakeSerial, actual);
   TEST_ASSERT_EQUAL_STRING_MESSAGE(expectedLine.c_str(), actual.c_str(),
                                    "Hit target shall be white");
 
-  TEST_ASSERT_TRUE(cut.isTargetHit(ITargetGui::TARGET::One));
-  TEST_ASSERT_TRUE(cut.isTargetHit(ITargetGui::TARGET::Two));
-  TEST_ASSERT_TRUE(cut.isTargetHit(ITargetGui::TARGET::Three));
-  TEST_ASSERT_TRUE(cut.isTargetHit(ITargetGui::TARGET::Four));
-  TEST_ASSERT_TRUE(cut.isTargetHit(ITargetGui::TARGET::Five));
+  TEST_ASSERT_TRUE(cut.isTargetHit(ITargetUi::TARGET::One));
+  TEST_ASSERT_TRUE(cut.isTargetHit(ITargetUi::TARGET::Two));
+  TEST_ASSERT_TRUE(cut.isTargetHit(ITargetUi::TARGET::Three));
+  TEST_ASSERT_TRUE(cut.isTargetHit(ITargetUi::TARGET::Four));
+  TEST_ASSERT_TRUE(cut.isTargetHit(ITargetUi::TARGET::Five));
 }
 
 void expect_gui_to_display_player_info() {

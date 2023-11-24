@@ -35,7 +35,7 @@ void BTEGui::_output(const char *message) {
 #endif
 }
 
-void BTEGui::hitTarget(ITargetGui::TARGET target) {
+void BTEGui::hitTarget(ITargetUi::TARGET target) {
   targetState |= (1 << target);
   char letter = TARGET_APP_LETTERS[(uint8_t)target];
 
@@ -43,7 +43,7 @@ void BTEGui::hitTarget(ITargetGui::TARGET target) {
   _output(stringBuffer);
 }
 
-bool BTEGui::isTargetHit(ITargetGui::TARGET target) {
+bool BTEGui::isTargetHit(ITargetUi::TARGET target) {
   return ((targetState & (1 << target)) == (1 << target));
 }
 
@@ -76,15 +76,23 @@ void BTEGui::displayPlayerInfo(const Player &player) {
   _output(stringBuffer);
 }
 
-#if defined(AVR)
+void BTEGui::log(const char *message) {
+  sprintf(stringBuffer, "%s", message);
+  _output(stringBuffer);
+}
+void BTEGui::log(uint8_t value) {
+  sprintf(stringBuffer, "%u", value);
+  _output(stringBuffer);
+}
+
+#if not defined(NATIVE)
 static void sendApplication() {
   Serial.println(F("*.kwl"));
   Serial.println(F("clear_panel()"));
   Serial.println(F("set_grid_size(21,10)"));
 
   // current player
-  Serial.println(
-      F("add_text(4,8,xlarge,L,Current player: , 245, 240, 245,)"));
+  Serial.println(F("add_text(4,8,xlarge,L,Current player: , 245, 240, 245,)"));
   Serial.println(F("add_text(10,8,xlarge,C,1,245,240,245,M)"));
 
   // targets
@@ -118,7 +126,7 @@ static void sendApplication() {
   Serial.println(F("add_button(19,5,25,N,|)"));
 
   Serial.println(F("add_button(0,8,30,R,|)"));
-  Serial.println(F("add_slider(10,9,8,100,1024,500,T ,|,1)"));
+  Serial.println(F("add_slider(10,9,8,1,50,1,T ,|,1)"));
 
   Serial.println(F("add_monitor(18,8,3,,1)"));
   Serial.println(F("set_panel_notes(-,,,)"));
