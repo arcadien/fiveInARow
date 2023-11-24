@@ -15,7 +15,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <Contactor.hpp>
+#include <Contactor/Contactor.hpp>
 
 void Contactor::checkForLongPress(long now) {
   if ((downStartTime > 0) && ((now - downStartTime) >= LONG_PRESS)) {

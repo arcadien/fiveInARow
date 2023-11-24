@@ -1,3 +1,4 @@
+
 /*
  *
  * Copyright (c) 2023 Aurélien Labrosse
@@ -15,28 +16,29 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 #pragma once
-#include <Target/ITargetUi.hpp>
+
 #include <stdint.h>
 
-class TestGui : public ITargetUi {
+/**
+ * This interface suggests an implemetation following the state pattern.
+ * `update()` behaviour can change according to current ITarget state.
+ *
+ */
+class ITarget {
 
 public:
-  uint8_t targetState;
 
-  TestGui() : targetState(0) {}
+  enum State { Activated, Calibrating, Ready, Hit, Error };
+  enum Event { NoEvent, Calibrate, Calibrated, Shoot, Reset };
 
-  void hitTarget(ITargetUi::TARGET target) override {
-    targetState |= (1 << target);
-  }
+  virtual ~ITarget() {}
 
-  bool isTargetHit(ITargetUi::TARGET target) {
-    return ((targetState & (1 << target)) == (1 << target));
-  }
+  virtual void post(ITarget::Event event) = 0;
 
-  void setCurrentPlayer(uint8_t playerId) override {}
-  void restart() override {}
-  void resetTargets() override { targetState = 0; }
-  void displayPlayerInfo(const Player &player) override {}
-  void log(const char *) override {}
-  void log(uint8_t value) override {}
+  virtual ITarget::State getState() = 0;
+
+  /**
+   * System heartbeat callback
+   */
+  virtual void update() = 0;
 };

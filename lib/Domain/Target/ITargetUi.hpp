@@ -16,46 +16,21 @@
  */
 #pragma once
 
+#include <Target/ITarget.hpp>
 #include <stdint.h>
-#include <Player.hpp>
 
-class ITargetGui {
+class ITargetUi {
 public:
+  virtual ~ITargetUi() {}
 
-  enum TARGET{
-    One = 0,
-    Two,
-    Three,
-    Four,
-    Five
-  };
-  
-  virtual ~ITargetGui() {}
+  // map ITarget states
 
-  /**
-   * Tell GUI a target has been hit
-  */
-  virtual void hitTarget(TARGET) = 0;
+  virtual void onHit() = 0;
+  virtual void onCalibrating() = 0;
+  virtual void onReady() = 0;
+  virtual void onError() = 0;
 
-  /**
-   * Ask GUI if a target has been hit
-  */
-  virtual bool isTargetHit(TARGET) = 0;
+  virtual void log(const char *) = 0;
 
-  /**
-   * Reset target hit status
-  */
-  virtual void resetTargets() = 0;
-
-  virtual void setCurrentPlayer(uint8_t playerId) = 0;
-
-  /*
-  * Send player info : id, shoots and hit shoots
-  *
-  *
-  */
-  virtual void displayPlayerInfo(const Player&) = 0;
-
-  virtual void restart() = 0;
-  
+  virtual void log(uint8_t value) = 0;
 };

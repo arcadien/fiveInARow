@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2023 Aurelien Labrosse
+ * Copyright (c) 2023 Aurélien Labrosse
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,18 +15,23 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <Arduino.h>
-#include <Target/BTEGui.hpp>
+/**
+ *
+ * This test suite is for targetHost implementation with LDRTarget
+ *
+ */
+
+#include <ArduinoFake.h>
+using namespace fakeit;
+
 #include <Game.hpp>
-#include <Target/TargetHost.hpp>
+#include <target/ITargetUi.hpp>
+#include <target/TargetHost.hpp>
 
-BTEGui gui;
-Game game(&gui);
-TargetHost host(&game, &gui);
+#include <unity.h>
 
-void setup() {
-  host.setup();
-  game.reset();
+int main(int, char **) {
+  UNITY_BEGIN();
+  UNITY_END();
+  return 0;
 }
-
-void loop() { host.update(); }

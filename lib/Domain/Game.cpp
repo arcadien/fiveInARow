@@ -19,15 +19,13 @@
 // 5 rounds per player
 static const uint8_t TOTAL_ROUNDS = 20;
 
-Game::Game(ITargetGui *gui) {
-  this->gui = gui;
+Game::Game() {
   currentRound = 0;
   currentPlayer = &players[0];
 }
 
 void Game::recordSucceededShoot() {
   currentPlayer->recordSucceededShoot();
-  gui->displayPlayerInfo(*currentPlayer);
 }
 
 /**
@@ -45,9 +43,7 @@ void Game::nextRound() {
     nextPlayerId = playerId + 1;
   }
   currentPlayer = &players[nextPlayerId];
-
   currentPlayer->startRound();
-  gui->displayPlayerInfo(*currentPlayer);
 }
 
 bool Game::isFinished() {
@@ -60,21 +56,14 @@ void Game::changeCurrentPlayerTo(uint8_t playerIndex) {
     currentPlayer->endRound();
     currentPlayer = &players[playerIndex];
     currentPlayer->startRound();
-    gui->setCurrentPlayer(playerIndex);
-    gui->resetTargets();
-    gui->displayPlayerInfo(*currentPlayer);
   }
 }
 
 void Game::reset() {
-  gui->restart();
   for (Player &player : players) {
     player.reset();
-    gui->displayPlayerInfo(player);
   }
   currentRound = 0;
   currentPlayer = &players[0];
   currentPlayer->startRound();
-  gui->displayPlayerInfo(*currentPlayer);
-  gui->setCurrentPlayer(0);
 }

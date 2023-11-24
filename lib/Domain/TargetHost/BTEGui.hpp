@@ -16,7 +16,9 @@
  */
 #pragma once
 
-#include <ITargetGui.hpp>
+#include <Player.hpp>
+#include <Target/ITarget.hpp>
+
 #include <stdint.h>
 
 #if not defined(AVR)
@@ -24,10 +26,13 @@
 #endif
 
 /**
- * GUI for Bluetooth Electronics interface (Android)
+ * UI for Bluetooth Electronics interface (Android)
+ *
+ * This UI allows to display each target status as well as player current score.
+ * Callbacks methods also allow to reset the UI to initial state.
+ *
  */
-class BTEGui : public ITargetGui {
-  uint8_t targetState;
+class BTEGui {
 
   /* Bluetooth application uses a letter to identify which widget
    * shall use the received data. Theses are for targets representation
@@ -52,17 +57,18 @@ class BTEGui : public ITargetGui {
   void _output(const char *message);
 
 public:
-#if defined(AVR)
-  BTEGui() : targetState(0) {}
-#else
+#if !defined(AVR)
   std::ostream &out;
-  explicit BTEGui(std::ostream &out) : targetState(0), out(out) {}
+  explicit BTEGui(std::ostream &out) : out(out) {}
 #endif
 
-  void setCurrentPlayer(uint8_t playerId) override;
-  void hitTarget(ITargetGui::TARGET target) override;
-  bool isTargetHit(ITargetGui::TARGET target) override;
-  void resetTargets() override;
-  void displayPlayerInfo(const Player &player) override;
-  void restart() override;
+  void setCurrentPlayer(const Player &player);
+
+  void updateTarget(ITarget *target);
+
+  void displayPlayerInfo(const Player &player);
+
+  void restart();
+  void log(const char *);
+  void log(uint8_t value);
 };

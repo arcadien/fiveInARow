@@ -16,51 +16,36 @@
  */
 #pragma once
 
-#include <Player.hpp>
-#include <Target/ITargetUi.hpp>
-
+#include <Target/ITarget.hpp>
 #include <stdint.h>
 
 /**
- * A game has 4 players
+ * @brief Target host is a device managing 5 targets
+ *
+ * A target is considered hit if its luminosity value exceed (ambientValue +
+ * threshold) A target has a multicolor led: Off is ready, green is shot, blue
+ * is calibration, red is error
  */
-class Game {
+
+class ITargetHost {
 
 public:
-  static const uint8_t PLAYER_COUNT = 4;
+  virtual ~ITargetHost() {}
 
-  // clang-format off
-  Player players[PLAYER_COUNT] = {
-    Player(0), 
-    Player(1),
-    Player(2), 
-    Player(3)
-  };
-  // clang-format on
-
-  uint8_t currentRound;
-  Player *currentPlayer;
-
-  Game();
-
-  void recordSucceededShoot();
+  virtual void reset() = 0;
 
   /**
-   * Change current player
-   * playerIndex shall be [0;3]
+   * Callback for system clock
    */
-  void changeCurrentPlayerTo(uint8_t playerIndex);
+  virtual void update() = 0;
 
   /**
-   * End current player round, and initiate next player round
+   * Notification led on
    */
-  void nextRound();
+  virtual void ledOn() = 0;
 
   /**
-   * Return true when all rounds have been played. A game stay finished until
-   * restart.
+   * Notification led off
    */
-  bool isFinished();
-
-  void reset();
+  virtual void ledOff() = 0;
 };

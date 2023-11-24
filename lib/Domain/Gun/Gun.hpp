@@ -16,7 +16,7 @@
  */
 #pragma once
 
-#include <Contactor.hpp>
+#include <Contactor/Contactor.hpp>
 #include <Gun/Button.hpp>
 #include <Gun/IGunHal.hpp>
 #include <Gun/IGunUi.hpp>
