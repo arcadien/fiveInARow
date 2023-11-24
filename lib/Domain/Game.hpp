@@ -43,7 +43,7 @@ public:
   uint8_t currentRound;
   Player *currentPlayer;
 
-  Game(ITargetGui *);
+  explicit Game(ITargetGui *);
 
   void recordSucceededShoot();
 

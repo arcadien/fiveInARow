@@ -15,165 +15,221 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <Gun.hpp>
-#include <TestGui.hpp>
+#include <Gun/Gun.hpp>
+#include <Gun/IGunHal.hpp>
+#include <Gun/IGunUi.hpp>
+
 #include <unity.h>
 
 #include <ArduinoFake.h>
 using namespace fakeit;
 
 #define MOCK_ALL()                                                             \
-  When(Method(mock, vibrationOn)).AlwaysReturn();                              \
-  When(Method(mock, vibrationOff)).AlwaysReturn();                             \
-  When(Method(mock, laserOn)).AlwaysReturn();                                  \
-  When(Method(mock, laserOff)).AlwaysReturn();                                 \
-  When(Method(mock, ledOn)).AlwaysReturn();                                    \
-  When(Method(mock, ledOff)).AlwaysReturn();                                   \
-  When(Method(mock, shortDelay)).AlwaysReturn();                               \
-  When(Method(mock, longDelay)).AlwaysReturn();                                \
-  When(Method(mock, isButton1Pressed)).AlwaysReturn();                         \
-  When(Method(mock, isButton2Pressed)).AlwaysReturn();                         \
-  When(Method(mock, deepSleep)).AlwaysReturn();
+  When(Method(mockHal, triggerIsUp)).AlwaysReturn(true);                       \
+  When(Method(mockHal, buttonIsUp)).AlwaysReturn(true);                        \
+  When(Method(mockHal, laserOn)).AlwaysReturn();                               \
+  When(Method(mockHal, vibrationOn)).AlwaysReturn();                           \
+  When(Method(mockHal, vibrationOff)).AlwaysReturn();                          \
+  When(Method(mockHal, laserOff)).AlwaysReturn();                              \
+  When(Method(mockHal, getBatteryVoltageMv)).AlwaysReturn(5000U);              \
+  When(Method(mockHal, getBatteryVoltagePercent)).AlwaysReturn(100U);          \
+  When(Method(mockHal, sleep)).AlwaysReturn();                                 \
+  When(Method(mockUi, displayBatteryStatus)).AlwaysReturn();                   \
+  When(Method(mockUi, displayShootCount)).AlwaysReturn();                      \
+  When(Method(mockUi, displayCalibration)).AlwaysReturn();                     \
+  When(Method(mockUi, clearCalibration)).AlwaysReturn();                       \
+  When(Method(mockUi, displaySplash)).AlwaysReturn();
 
 void tearDown() {}
 void setUp() { ArduinoFakeReset(); }
 
-void expect_shot_to_activate_laser_during_short_duration() {
+void expect_gun_to_loop() {
 
-  Mock<IGunHal> mock;
+  Mock<IGunUi> mockUi;
+  Mock<IGunHal> mockHal;
+
   MOCK_ALL();
-  IGunHal &hal = mock.get();
-  Gun gun(hal);
 
-  // first, give 5 shots
-  gun.onButton2ShortPress();
+  IGunUi &ui = mockUi.get();
+  IGunHal &hal = mockHal.get();
 
-  // shot
-  gun.onButton1ShortPress();
+  Gun gun(&hal, &ui);
 
-  Verify(Method(mock, laserOn)).Once();
-  Verify(Method(mock, shortDelay)).Once();
-  Verify(Method(mock, laserOff)).Once();
+  gun.loop();
+}
+void expect_gun_to_shoot_50ms_on_trigger_down() {
+
+  Mock<IGunUi> mockUi;
+  Mock<IGunHal> mockHal;
+
+  MOCK_ALL();
+
+  IGunUi &ui = mockUi.get();
+  IGunHal &hal = mockHal.get();
+
+  Gun gun(&hal, &ui);
+
+  gun.trigger.pendingEvent = Contactor::Event::Pressed;
+  gun.loop();
+  gun.loop();
+  gun.trigger.pendingEvent = Contactor::Event::Released;
+  gun.loop();
+  gun.trigger.pendingEvent = Contactor::Event::NoEvent;
+  gun.loop();
+  gun.loop();
+  gun.loop();
+  gun.loop();
+
+  // trigger is pressed then released,
+  // activating laser for 50ms/5 ticks
+  Verify(Method(mockHal, laserOn)).Once();
+  Verify(Method(mockHal, vibrationOn)).Once();
+  Verify(Method(mockHal, vibrationOff)).Once();
+  Verify(Method(mockHal, laserOff)).Once();
 }
 
-void expect_shot_to_activate_vibration_during_short_duration() {
+void expect_ui_to_display_battery_state_at_boot_and_each_1s() {
+  Mock<IGunUi> mockUi;
+  Mock<IGunHal> mockHal;
 
-  Mock<IGunHal> mock;
   MOCK_ALL();
-  IGunHal &hal = mock.get();
-  Gun gun(hal);
 
-  // first, give 5 shots
-  gun.onButton2ShortPress();
+  IGunUi &ui = mockUi.get();
+  IGunHal &hal = mockHal.get();
 
-  // shot
-  gun.onButton1ShortPress();
+  Gun gun(&hal, &ui);
 
-  Verify(Method(mock, vibrationOn)).Once();
-  Verify(Method(mock, shortDelay)).Once();
-  Verify(Method(mock, vibrationOff)).Once();
+  for (uint8_t tickCounter = 0; tickCounter <= 101; tickCounter++) {
+    // displayBatteryStatus call after 100 ticks
+    gun.loop();
+  }
+
+  // display at first loop, then each second (or 100 ticks)
+  Verify(Method(mockUi, displayBatteryStatus)).Exactly(2);
 }
 
-void expect_short_press_on_button2_to_give_5_shots() {
-  Mock<IGunHal> mock;
-  MOCK_ALL();
-  IGunHal &hal = mock.get();
-  Gun gun(hal);
-  gun.onButton2ShortPress();
-  TEST_ASSERT_EQUAL_INT_MESSAGE(5, gun.availableShots,
-                                "Shots shall have been incremented");
+void expect_switch_to_maintenance_after_2s_button_continuous_press() {
+  Mock<IGunUi> mockUi;
+  Mock<IGunHal> mockHal;
 
-  gun.onButton2ShortPress();
-  TEST_ASSERT_EQUAL_INT_MESSAGE(5, gun.availableShots,
-                                "A rearm always provide 5 shots");
+  MOCK_ALL();
+
+  IGunUi &ui = mockUi.get();
+  IGunHal &hal = mockHal.get();
+
+  Gun gun(&hal, &ui);
+
+  gun.button.pendingEvent = Contactor::Event::Pressed;
+  for (uint8_t tickCounter = 0; tickCounter <= 200; tickCounter++) {
+    // long press shall be accounted after 2s, 200 ticks
+    gun.loop();
+  }
+  gun.button.pendingEvent = Contactor::Event::Released;
+  gun.loop();
+  gun.button.pendingEvent = Contactor::Event::Pressed;
+  for (uint8_t tickCounter = 0; tickCounter <= 200; tickCounter++) {
+    // long press shall be accounted after 2s, 200 ticks
+    gun.loop();
+  }
+
+  // switch to calibration
+  Verify(Method(mockHal, laserOn)).Exactly(1);
+  Verify(Method(mockUi, displayCalibration)).Exactly(1);
+
+  // back to normal
+  Verify(Method(mockHal, laserOff)).Exactly(1);
+  Verify(Method(mockUi, clearCalibration)).Exactly(1);
+  Verify(Method(mockUi, displayShootCount)).Exactly(1);
 }
 
-void expect_shot_to_decrement_available_shot_count() {
-  Mock<IGunHal> mock;
+void expect_button_press_to_reset_shoot_count_and_redisplay() {
+  Mock<IGunUi> mockUi;
+  Mock<IGunHal> mockHal;
   MOCK_ALL();
-  IGunHal &hal = mock.get();
-  Gun gun(hal);
+  IGunUi &ui = mockUi.get();
+  IGunHal &hal = mockHal.get();
 
-  // first, give 5 shots
-  gun.onButton2ShortPress();
+  Gun gun(&hal, &ui);
 
-  gun.onButton1ShortPress();
-  TEST_ASSERT_EQUAL_INT_MESSAGE(
-      4, gun.availableShots,
-      "There shall be 4 more available shots after 1 shots");
-  gun.onButton1ShortPress();
-  gun.onButton1ShortPress();
-  gun.onButton1ShortPress();
-  gun.onButton1ShortPress();
-  TEST_ASSERT_EQUAL_INT_MESSAGE(
-      0, gun.availableShots,
-      "There shall be no more available shots after 5 shots");
-  gun.onButton1ShortPress();
+  gun.shootCount = 10;
 
-  // no bug when shooting with a remaining of 0
-  TEST_ASSERT_EQUAL_INT_MESSAGE(
-      0, gun.availableShots,
-      "There shall be no more available shots after 5 shots");
+  gun.button.pendingEvent = Contactor::Event::Pressed;
+  gun.loop();
+  gun.button.pendingEvent = Contactor::Event::Released;
+  gun.loop();
+
+  TEST_ASSERT_EQUAL_MESSAGE(0, gun.shootCount, "Shoot count shall be reset");
+  Verify(Method(mockUi, displayShootCount)).Exactly(1);
 }
 
-void expect_shot_to_do_nothing_if_there_is_no_available_shots() {
-  Mock<IGunHal> mock;
+void expect_trigger_to_have_no_effect_in_calibration_mode() {
+  Mock<IGunUi> mockUi;
+  Mock<IGunHal> mockHal;
+
   MOCK_ALL();
-  IGunHal &hal = mock.get();
-  Gun gun(hal);
 
-  // first, give 5 shots
-  gun.onButton2ShortPress();
+  IGunUi &ui = mockUi.get();
+  IGunHal &hal = mockHal.get();
 
-  gun.onButton1ShortPress(); // shot 1
-  gun.onButton1ShortPress(); // shot 2
-  gun.onButton1ShortPress(); // shot 3
-  gun.onButton1ShortPress(); // shot 4
-  gun.onButton1ShortPress(); // shot 5
-  gun.onButton1ShortPress(); // shot 6, which shall do nothing
+  Gun gun(&hal, &ui);
 
-  Verify(Method(mock, vibrationOn)).Exactly(5);
-  Verify(Method(mock, vibrationOff)).Exactly(5);
-  Verify(Method(mock, laserOn)).Exactly(5);
-  Verify(Method(mock, laserOff)).Exactly(5);
-  Verify(Method(mock, shortDelay)).Exactly(5);
-  Verify(Method(mock, vibrationOff)).Exactly(5);
+  gun.button.pendingEvent = Contactor::Event::Pressed;
+  for (uint8_t tickCounter = 0; tickCounter <= 200; tickCounter++) {
+    // long press shall be accounted after 2s, 200 ticks
+    gun.loop();
+  }
+
+  gun.button.pendingEvent = Contactor::Event::Released;
+  gun.loop();
+
+  gun.trigger.pendingEvent = Contactor::Event::Pressed;
+  gun.loop();
+  gun.trigger.pendingEvent = Contactor::Event::Released;
+  gun.loop();
+
+  Verify(Method(mockHal, laserOn)).Exactly(1);
+  Verify(Method(mockHal, laserOff)).Exactly(0);
 }
 
-void expect_long_press_on_button_two_to_activate_continuous_laser() {
-  Mock<IGunHal> mock;
+void expect_long_press_to_trigger_only_if_button_is_down() {
+  Mock<IGunUi> mockUi;
+  Mock<IGunHal> mockHal;
+
   MOCK_ALL();
-  IGunHal &hal = mock.get();
-  Gun gun(hal);
 
-  gun.onButton2LongPress();
+  IGunUi &ui = mockUi.get();
+  IGunHal &hal = mockHal.get();
 
-  Verify(Method(mock, laserOn)).Once();
-  Verify(Method(mock, shortDelay)).Exactly(0);
-  Verify(Method(mock, laserOff)).Exactly(0);
-}
+  Gun gun(&hal, &ui);
 
-void expect_long_press_on_button_one_to_trigger_deep_sleep()
-{
-  Mock<IGunHal> mock;
-  When(Method(mock, deepSleep)).Return();
-  IGunHal &hal = mock.get();
-  Gun gun(hal);
+  gun.button.pendingEvent = Contactor::Event::Pressed;
+  gun.loop();
 
-  gun.onButton1LongPress();
+  gun.button.pendingEvent = Contactor::Event::Released;
+  gun.loop();
 
-  Verify(Method(mock, deepSleep)).Once();
+  for (uint8_t tickCounter = 0; tickCounter <= 200; tickCounter++) {
+    // long press shall be accounted after 2s, 200 ticks
+    gun.loop();
+  }
+
+  // No long press, no switch to calibration
+  Verify(Method(mockHal, laserOn)).Exactly(0);
+  Verify(Method(mockUi, displayCalibration)).Exactly(0);
+  Verify(Method(mockHal, laserOff)).Exactly(0);
+  Verify(Method(mockUi, clearCalibration)).Exactly(0);
+  Verify(Method(mockUi, displayShootCount)).Exactly(1);
 }
 
 int main(int, char **) {
   UNITY_BEGIN();
-  RUN_TEST(expect_short_press_on_button2_to_give_5_shots);
-  RUN_TEST(expect_shot_to_activate_laser_during_short_duration);
-  RUN_TEST(expect_shot_to_activate_vibration_during_short_duration);
-  RUN_TEST(expect_shot_to_decrement_available_shot_count);
-  RUN_TEST(expect_shot_to_do_nothing_if_there_is_no_available_shots);
-  RUN_TEST(expect_long_press_on_button_two_to_activate_continuous_laser);
-  RUN_TEST(expect_long_press_on_button_one_to_trigger_deep_sleep);
+  RUN_TEST(expect_gun_to_loop);
+  RUN_TEST(expect_gun_to_shoot_50ms_on_trigger_down);
+  RUN_TEST(expect_ui_to_display_battery_state_at_boot_and_each_1s);
+  RUN_TEST(expect_switch_to_maintenance_after_2s_button_continuous_press);
+  RUN_TEST(expect_long_press_to_trigger_only_if_button_is_down);
+  RUN_TEST(expect_button_press_to_reset_shoot_count_and_redisplay);
+  RUN_TEST(expect_trigger_to_have_no_effect_in_calibration_mode);
 
   UNITY_END();
   return 0;
