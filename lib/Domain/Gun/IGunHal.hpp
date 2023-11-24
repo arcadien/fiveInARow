@@ -16,18 +16,30 @@
  */
 #pragma once
 
+#include <stdint.h>
+
+// forward declaration
+class Gun;
+
 class IGunHal {
 public:
   virtual ~IGunHal() {}
-  virtual bool isButton1Pressed() = 0;
-  virtual bool isButton2Pressed() = 0;
-  virtual void shortDelay() = 0;
-  virtual void longDelay() = 0;
-  virtual void ledOn() = 0;
-  virtual void ledOff() = 0;
+
+  virtual void setGun(Gun *gun) = 0;
+
+  /*
+   * the 'loop' method shall be called each 10ms
+   */
+  virtual void setupHeartbeat() = 0;
+  virtual bool triggerIsUp() = 0;
+  virtual bool buttonIsUp() = 0;
   virtual void laserOn() = 0;
   virtual void laserOff() = 0;
   virtual void vibrationOn() = 0;
   virtual void vibrationOff() = 0;
-  virtual void deepSleep() = 0;
+  virtual uint16_t getBatteryVoltageMv() = 0;
+  virtual uint8_t getBatteryVoltagePercent() = 0;
+  virtual bool isCharging() = 0;
+  virtual void sleep() = 0;
+  virtual void configureInputCallbacks() = 0;
 };
