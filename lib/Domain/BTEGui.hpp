@@ -56,7 +56,7 @@ public:
   BTEGui() : targetState(0) {}
 #else
   std::ostream &out;
-  BTEGui(std::ostream &out) : targetState(0), out(out) {}
+  explicit BTEGui(std::ostream &out) : targetState(0), out(out) {}
 #endif
 
   void setCurrentPlayer(uint8_t playerId) override;

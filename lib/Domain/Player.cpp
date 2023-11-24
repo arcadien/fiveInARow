@@ -37,12 +37,9 @@ void Player::reset() {
   totalShoots = 0;
 }
 
-void Player::startRound() {
-  totalShoots += 5;
-}
+void Player::startRound() { totalShoots += 5; }
 
 void Player::endRound() {
-  currentRound = 0;
   if (currentRound < (ROUND_COUNT - 1)) {
     currentRound++;
   }

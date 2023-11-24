@@ -32,7 +32,7 @@ public:
   uint8_t currentRound;
   uint8_t totalShoots;
 
-  Player(uint8_t id);
+  explicit Player(uint8_t id);
 
   uint8_t getTotalHitCount() const;
 
