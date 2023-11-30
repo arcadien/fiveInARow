@@ -16,7 +16,7 @@
  */
 #pragma once
 
-#include <ITargetUi.hpp>
+#include <Target/ITargetUi.hpp>
 #include <stdint.h>
 
 #if not defined(AVR)

@@ -15,7 +15,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <BTEGui.hpp>
+#include <target/BTEGui.hpp>
 #include <Game.hpp>
 #include <iostream>
 #include <string>

@@ -19,8 +19,8 @@
 using namespace fakeit;
 
 #include <Game.hpp>
-#include <ITargetUi.hpp>
-#include <TargetHost.hpp>
+#include <target/ITargetUi.hpp>
+#include <target/TargetHost.hpp>
 
 #include <unity.h>
 
@@ -57,8 +57,9 @@ void expect_threshold_to_be_storable_in_eeprom() {
 
 void expect_setup_to_configure_led_pin() {
   Mock<ITargetUi> mockGui;
-  Game game(&mockGui.get());
-  TargetHost app(&game, &mockGui.get());
+  ITargetUi &ui = mockGui.get();
+  Game game(&ui);
+  TargetHost app(&game, &ui);
   When(Method(ArduinoFake(), pinMode)).Return();
   When(Method(ArduinoFake(), analogRead)).AlwaysReturn(0);
   When(Method(ArduinoFake(), digitalWrite)).AlwaysReturn();
@@ -68,7 +69,7 @@ void expect_setup_to_configure_led_pin() {
 
   mockGuiForSetup(mockGui);
 
-  app.setup();
+  app.setup(); 
 
   static const uint8_t LED_PIN = 9;
   Verify(Method(ArduinoFake(), pinMode).Using(LED_PIN, OUTPUT)).Once();
@@ -76,33 +77,30 @@ void expect_setup_to_configure_led_pin() {
 
 void expect_ambient_level_to_be_sampled_at_startup_for_each_target() {
   Mock<ITargetUi> mockGui;
-  Game game(&mockGui.get());
-  TargetHost app(&game, &mockGui.get());
+  ITargetUi &ui = mockGui.get();
+  Game game(&ui);
+  TargetHost app(&game, &ui);
 
   When(Method(ArduinoFake(), pinMode)).Return();
   When(MOCKED_EEPROM_READ).AlwaysReturn(0);
   When(OverloadedMethod(ArduinoFake(Serial), begin, void(unsigned long)))
       .AlwaysReturn();
+
   When(Method(ArduinoFake(), digitalWrite)).AlwaysReturn();
   When(Method(ArduinoFake(), analogRead)).AlwaysReturn(1000);
-  When(Method(ArduinoFake(), analogRead).Using(A0)).AlwaysReturn(99);
-  When(Method(ArduinoFake(), analogRead).Using(A1)).AlwaysReturn(108);
-  When(Method(ArduinoFake(), analogRead).Using(A2)).AlwaysReturn(104);
-  When(Method(ArduinoFake(), analogRead).Using(A3)).AlwaysReturn(103);
-  When(Method(ArduinoFake(), analogRead).Using(A4)).AlwaysReturn(96);
 
   mockGuiForSetup(mockGui);
 
   app.setup();
 
-  TEST_ASSERT_EQUAL(99, app.targets[0].ambientValue);
-  TEST_ASSERT_EQUAL(108, app.targets[1].ambientValue);
-  TEST_ASSERT_EQUAL(104, app.targets[2].ambientValue);
-  TEST_ASSERT_EQUAL(103, app.targets[3].ambientValue);
-  TEST_ASSERT_EQUAL(96, app.targets[4].ambientValue);
-
   Verify(Method(ArduinoFake(), pinMode)).AtLeastOnce();
-  Verify(Method(ArduinoFake(), analogRead)).AtLeastOnce();
+
+  // Note: 5 reads for calibration
+  Verify(Method(ArduinoFake(), analogRead).Using(A0)).Exactly(5);
+  Verify(Method(ArduinoFake(), analogRead).Using(A1)).Exactly(5);
+  Verify(Method(ArduinoFake(), analogRead).Using(A2)).Exactly(5);
+  Verify(Method(ArduinoFake(), analogRead).Using(A3)).Exactly(5);
+  Verify(Method(ArduinoFake(), analogRead).Using(A4)).Exactly(5);
 }
 
 void expect_status_led_to_blink_when_a_target_is_hit() {
@@ -117,8 +115,9 @@ void expect_status_led_to_blink_when_a_target_is_hit() {
     ArduinoFakeReset();
 
     Mock<ITargetUi> mockGui;
-    Game game(&mockGui.get());
-    TargetHost app(&game, &mockGui.get());
+    ITargetUi &ui = mockGui.get();
+    Game game(&ui);
+    TargetHost app(&game, &ui);
 
     // ARRANGE
 
@@ -160,8 +159,9 @@ void expect_status_led_to_blink_when_a_target_is_hit() {
 
 void expect_gui_to_be_notified_when_a_target_is_hit() {
   Mock<ITargetUi> mockGui;
-  Game game(&mockGui.get());
-  TargetHost app(&game, &mockGui.get());
+  ITargetUi &ui = mockGui.get();
+  Game game(&ui);
+  TargetHost app(&game, &ui);
 
   // Run initialization and two loop() call.
   // Ensure GUI is notified *once* when a target is hit
@@ -216,8 +216,9 @@ void expect_gui_to_be_notified_when_a_target_is_hit() {
 
 void expect_threshold_to_be_settable_via_serial_command() {
   Mock<ITargetUi> mockGui;
-  Game game(&mockGui.get());
-  TargetHost app(&game, &mockGui.get());
+  ITargetUi &ui = mockGui.get();
+  Game game(&ui);
+  TargetHost app(&game, &ui);
 
   mockForCommandTest(mockGui);
 
@@ -272,7 +273,7 @@ int main(int, char **) {
   RUN_TEST(expect_gui_to_be_notified_when_a_target_is_hit);
   RUN_TEST(expect_threshold_to_be_settable_via_serial_command);
   RUN_TEST(expect_player_to_be_changeable_via_serial_command);
-  
+
   UNITY_END();
   return 0;
 }
@@ -315,6 +316,7 @@ static void mockGuiForSetup(Mock<ITargetUi> &mockGui) {
   When(Method(mockGui, restart)).AlwaysReturn();
   When(Method(mockGui, displayPlayerInfo)).AlwaysReturn();
   When(Method(mockGui, setCurrentPlayer)).AlwaysReturn();
+  When(Method(mockGui, resetTargets)).AlwaysReturn();
   When(Method(mockGui, hitTarget)).AlwaysReturn();
   When(OverloadedMethod(mockGui, log, void(const char *))).AlwaysReturn();
   When(OverloadedMethod(mockGui, log, void(uint8_t))).AlwaysReturn();

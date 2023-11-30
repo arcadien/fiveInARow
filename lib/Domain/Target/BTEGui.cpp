@@ -15,7 +15,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <BTEGui.hpp>
+#include <Target/BTEGui.hpp>
 
 #if not defined(NATIVE)
 #include <Arduino.h>

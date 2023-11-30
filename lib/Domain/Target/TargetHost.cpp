@@ -14,10 +14,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-#include "TargetHost.hpp"
 #include <Arduino.h>
 #include <EEPROM.h>
-
+#include <Target/TargetHost.hpp>
+#include <Target/LDRTarget.hpp>
 #include <SerialCommands.h>
 
 char serial_command_buffer_[16];
@@ -59,10 +59,6 @@ void TargetHost::storeThreshold(uint8_t threshold) {
   EEPROM.update(TRESHOLD_ADDRESS, threshold);
 }
 
-inline uint16_t TargetHost::getLightIntensityFor(const Target &target) {
-  return analogRead(target.pin);
-}
-
 void TargetHost::ledOn() { digitalWrite(LED_PIN, HIGH); }
 
 void TargetHost::ledOff() { digitalWrite(LED_PIN, LOW); }
@@ -77,9 +73,8 @@ void TargetHost::setup() {
   // load value in cache from EEPROM
   getThreshold();
 
-  for (Target &target : targets) {
-    analogRead(target.pin);
-    target.ambientValue = analogRead(target.pin);
+  for (ITarget *target : targets) {
+    target->calibrate();
   }
   _serial_commands.context = this;
   _serial_commands.SetDefaultHandler(serial_cmd_unrecognized_callback);
@@ -92,19 +87,16 @@ void TargetHost::setup() {
 
 void TargetHost::loop() {
 
-  uint16_t threshold = getThreshold();
-
-  for (Target &target : targets) {
-    if (getLightIntensityFor(target) > (target.ambientValue + threshold)) {
+  static const uint8_t targetCount = (sizeof(targets) / sizeof(ITarget));
+  for (uint8_t targetIndex = 0; targetIndex < targetCount; targetIndex++) {
+    ITarget *target = targets[targetIndex];
+    if (target->getState() == ITarget::State::Hit) {
       ITargetUi::TARGET uiTarget;
-      uiTarget = static_cast<ITargetUi::TARGET>(target.index);
-      if (!target.isHit) {
-        ui->hitTarget(uiTarget);
-        target.isHit = true;
-        ledOn();
-        delay(100);
-        ledOff();
-      }
+      uiTarget = static_cast<ITargetUi::TARGET>(targetIndex);
+      ui->hitTarget(uiTarget);
+      ledOn();
+      delay(100);
+      ledOff();
     }
   }
   _serial_commands.ReadSerial();
@@ -142,26 +134,17 @@ void serial_cmd_changePlayer_callback(SerialCommands *sender) {
   targetHost->game->changeCurrentPlayerTo(playerId);
 }
 
-void TargetHost::resetTargets() { ui->resetTargets(); }
+void TargetHost::reset() { ui->resetTargets(); }
 
 TargetHost::TargetHost(Game *game, ITargetUi *ui) {
-  targets[0].pin = TARGET_A_PIN;
-  targets[0].index = 0;
-
-  targets[1].pin = TARGET_Z_PIN;
-  targets[1].index = 1;
-
-  targets[2].pin = TARGET_E_PIN;
-  targets[2].index = 2;
-
-  targets[3].pin = TARGET_R_PIN;
-  targets[3].index = 3;
-
-  targets[4].pin = TARGET_T_PIN;
-  targets[4].index = 4;
 
   this->game = game;
   this->ui = ui;
 
   thresholdCache = 0;
+  targets[0] = new LDRTarget(A0);
+  targets[1] = new LDRTarget(A1);
+  targets[2] = new LDRTarget(A2);
+  targets[3] = new LDRTarget(A3);
+  targets[4] = new LDRTarget(A4);
 }

@@ -1,6 +1,7 @@
+
 /*
  *
- * Copyright (c) 2023 Aurelien Labrosse
+ * Copyright (c) 2023 Aurélien Labrosse
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,19 +15,36 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+#pragma once
 
-#include <Arduino.h>
-#include <Target/BTEGui.hpp>
-#include <Game.hpp>
-#include <Target/TargetHost.hpp>
+#include <stdint.h>
 
-BTEGui gui;
-Game game(&gui);
-TargetHost host(&game, &gui);
+class ITarget {
 
-void setup() {
-  host.setup();
-  game.reset();
-}
+public:
+  enum State { Calibrating, Ready, Hit, Error };
 
-void loop() { host.loop(); }
+  virtual ~ITarget() {}
+
+  /**
+   * @brief transition to Ready state
+   *
+   */
+  virtual void reset() = 0;
+
+  /**
+   * @brief transition to Calibration state
+   *
+   */
+  virtual void calibrate() = 0;
+
+  /**
+   * @brief transition to Hit state
+   *
+   */
+  virtual void hit() = 0;
+
+  virtual uint16_t getLuminosity() = 0;
+  
+  virtual State getState() = 0;
+};

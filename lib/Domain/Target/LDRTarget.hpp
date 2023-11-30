@@ -1,3 +1,4 @@
+
 /*
  *
  * Copyright (c) 2023 Aurélien Labrosse
@@ -15,28 +16,38 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 #pragma once
-#include <Target/ITargetUi.hpp>
-#include <stdint.h>
+#include <Target/ITarget.hpp>
 
-class TestGui : public ITargetUi {
+// forward declaration
+class TargetHost;
+
+class LDRTarget : public ITarget {
+
+  uint16_t ambiantLuminosity;
+  uint8_t luminosityPin;
+  State state;
+  uint8_t threshold;
 
 public:
-  uint8_t targetState;
+  LDRTarget(uint8_t luminosityPin);
 
-  TestGui() : targetState(0) {}
+  void reset() override;
+  void calibrate() override;
+  void hit() override;
+  uint16_t getLuminosity() override;
+  State getState() override;
 
-  void hitTarget(ITargetUi::TARGET target) override {
-    targetState |= (1 << target);
-  }
+  /**
+   * @brief Set the difference with ambiant luminosity level that triggers a hit
+   * condition
+   *
+   * @param threshold
+   */
+  void setThreshold(uint8_t threshold);
 
-  bool isTargetHit(ITargetUi::TARGET target) {
-    return ((targetState & (1 << target)) == (1 << target));
-  }
-
-  void setCurrentPlayer(uint8_t playerId) override {}
-  void restart() override {}
-  void resetTargets() override { targetState = 0; }
-  void displayPlayerInfo(const Player &player) override {}
-  void log(const char *) override {}
-  void log(uint8_t value) override {}
+  /**
+   * @brief Check if target is in hit condition
+   *
+   */
+  bool check();
 };

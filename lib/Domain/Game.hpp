@@ -16,7 +16,7 @@
  */
 #pragma once
 
-#include <ITargetUi.hpp>
+#include <Target/ITargetUi.hpp>
 #include <Player.hpp>
 
 #include <stdint.h>

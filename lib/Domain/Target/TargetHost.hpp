@@ -17,8 +17,8 @@
 #pragma once
 
 #include <Game.hpp>
-#include <ITargetUi.hpp>
-#include <ITargetHost.hpp>
+#include <Target/ITargetHost.hpp>
+#include <Target/ITargetUi.hpp>
 #include <stdint.h>
 
 /**
@@ -34,26 +34,29 @@ class TargetHost : public ITargetHost {
    * in same luminosity condition without reconfiguring
    */
   uint8_t thresholdCache;
-  
+
 public:
-  Target targets[5];
+  void storeThreshold(uint8_t threshold);
+
+  /**
+   * Return value of difference needed between ambient light level and hit light
+   * level value [1;254]
+   */
+
+  uint8_t getThreshold();
+
+  ITarget *targets[5];
   Game *game;
   ITargetUi *ui;
 
   TargetHost(Game *game, ITargetUi *ui);
 
-  /* ITargetHost API */
-
-  uint16_t getLightIntensityFor(const Target &target) override;
   void ledOn() override;
   void ledOff() override;
-  void resetTargets() override;
-  uint8_t getThreshold() override;
+  void reset() override;
 
   /* Specific methods */
 
   void setup();
   void loop();
-  void storeThreshold(uint8_t threshold);
-
 };

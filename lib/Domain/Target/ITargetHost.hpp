@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2023 Aurelien Labrosse
+ * Copyright (c) 2023 Aurélien Labrosse
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,19 +14,35 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+#pragma once
 
-#include <Arduino.h>
-#include <Target/BTEGui.hpp>
-#include <Game.hpp>
-#include <Target/TargetHost.hpp>
+#include <Target/ITarget.hpp>
+#include <stdint.h>
 
-BTEGui gui;
-Game game(&gui);
-TargetHost host(&game, &gui);
+/**
+ * @brief Target host is a device managing 5 targets
+ *
+ * A target is considered hit if its luminosity value exceed (ambientValue +
+ * threshold) A target has a multicolor led: Off is ready, green is shot, blue
+ * is calibration, red is error
+ */
 
-void setup() {
-  host.setup();
-  game.reset();
-}
+class ITargetHost {
 
-void loop() { host.loop(); }
+
+public:
+
+  virtual ~ITargetHost() {}
+
+  virtual void reset() = 0;
+
+  /**
+   * Notification led on
+   */
+  virtual void ledOn() = 0;
+
+  /**
+   * Notification led off
+   */
+  virtual void ledOff() = 0;
+};
