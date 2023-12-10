@@ -18,9 +18,10 @@
 #include <iostream>
 #include <string>
 
-#include <Game.hpp>
-#include <TargetHost/BTEGui.hpp>
+#include <Game/basic5/Basic5.hpp>
+#include <Game/basic5/Basic5Ui.hpp>
 #include <TargetHost/TargetHost.hpp>
+#include <iostream>
 
 void printLine() {
   std::cout << std::endl
@@ -30,15 +31,16 @@ void printLine() {
 int main() {
   std::cout << "Console Application" << std::endl;
 
-  BTEGui gui(std::cout);
-  Game game;
-  TargetHost host(&game, &gui);
+  Basic5Ui ui(std::cout);
+  Basic5 game(&ui);
+  TargetHost host(&game);
+
+  game.restart();
 
   printLine();
 
-  gui.displayPlayerInfo(*game.currentPlayer);
   std::cout << "Type 'T' to fire a system tick" << std::endl;
-  std::cout << "Type 'N' to switch to next player" << std::endl;
+  // std::cout << "Type 'N' to switch to next player" << std::endl;
   std::cout << "Type 0,1,2,3 or 4 to hit a target" << std::endl;
   std::cout << "Type 'R' to reset the target host" << std::endl;
   std::cout << "Type 'Q' to quit game" << std::endl;
@@ -52,20 +54,22 @@ int main() {
       host.update();
 
     } else if (str == "N") {
-      game.nextRound();
-      printLine();
-      std::cout << "Player " << game.currentPlayer->id + 1
-                << " turn! ( global round "
-                << (game.currentRound / Game::PLAYER_COUNT) << ")" << std::endl;
+
+    } else if (str == "0") {
+
+    } else if (str == "1") {
+
+    } else if (str == "2") {
+
+    } else if (str == "3") {
+
+    } else if (str == "4") {
 
     } else if (str == "R") {
-      host.reset();
+      host.restart();
 
     } else if (str == "Q") {
-      printLine();
-      for (auto player : game.players) {
-        gui.displayPlayerInfo(player);
-      }
+      exit(0);
     }
   }
 }

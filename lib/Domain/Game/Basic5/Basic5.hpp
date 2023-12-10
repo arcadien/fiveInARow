@@ -16,36 +16,31 @@
  */
 #pragma once
 
-#include <Target/ITarget.hpp>
-#include <stdint.h>
+#include <Game/IGame.hpp>
+#include <Game/IGameUi.hpp>
 
 /**
- * @brief Target host manages 5 targets and a IGame implementation
- *
- * A target is considered hit if its luminosity value exceed (ambientValue +
- * threshold) A target has a multicolor led: Off is ready, green is shot, blue
- * is calibration, red is error
+ * This game has a single player, who have unlimited
+ * ammunition to shot the five targets.
  */
+class Basic5 : public IGame {
 
-class ITargetHost {
+  IGameUi *ui;
+  Player player;
 
 public:
-  virtual ~ITargetHost() {}
+  Basic5(IGameUi *ui) : player(0) { this->ui = ui; }
 
-  virtual void restart() = 0;
+  ~Basic5() {}
 
-  /**
-   * Callback for system clock
-   */
-  virtual void update() = 0;
+  Player *getCurrentPlayer();
 
-  /**
-   * Notification led on
-   */
-  virtual void ledOn() = 0;
+  void restart() {
+    ui->restart();
+    player.restart();
+  }
 
-  /**
-   * Notification led off
-   */
-  virtual void ledOff() = 0;
+  void changeCurrentPlayerTo(uint8_t playerId) {
+    // only one player
+  }
 };

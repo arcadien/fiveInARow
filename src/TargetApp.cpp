@@ -16,17 +16,18 @@
  */
 
 #include <Arduino.h>
-#include <Target/BTEGui.hpp>
-#include <Game.hpp>
-#include <Target/TargetHost.hpp>
+#include <TargetHost/TargetHost.hpp>
+#include <Game/Basic5/Basic5.hpp>
+#include <Game/Basic5/Basic5Ui.hpp>
 
-BTEGui gui;
-Game game(&gui);
-TargetHost host(&game, &gui);
+
+Basic5Ui ui;
+Basic5 game(&ui);
+TargetHost host(&game);
 
 void setup() {
   host.setup();
-  game.reset();
+  game.restart();
 }
 
 void loop() { host.update(); }

@@ -1,3 +1,4 @@
+
 /*
  *
  * Copyright (c) 2023 Aurélien Labrosse
@@ -16,12 +17,13 @@
  */
 #pragma once
 
-#include <Player.hpp>
+#include <Game/IGameUi.hpp>
+#include <Game/Player.hpp>
 #include <Target/ITarget.hpp>
 
 #include <stdint.h>
 
-#if not defined(AVR)
+#if defined(NATIVE)
 #include <ostream>
 #endif
 
@@ -32,7 +34,7 @@
  * Callbacks methods also allow to reset the UI to initial state.
  *
  */
-class BTEGui {
+class Basic5Ui : public IGameUi {
 
   /* Bluetooth application uses a letter to identify which widget
    * shall use the received data. Theses are for targets representation
@@ -56,19 +58,21 @@ class BTEGui {
 
   void _output(const char *message);
 
+  /**
+   * Send UI description for Bluetooth Electronics
+   * over the serial connection
+   */
+  void sendUIDescriptionToBluetoothElectronics();
+
 public:
-#if !defined(AVR)
+#if defined(NATIVE)
   std::ostream &out;
-  explicit BTEGui(std::ostream &out) : out(out) {}
+  explicit Basic5Ui(std::ostream &out) : out(out) {}
 #endif
 
-  void setCurrentPlayer(const Player &player);
-
-  void updateTarget(ITarget *target);
-
-  void displayPlayerInfo(const Player &player);
-
-  void restart();
-  void log(const char *);
-  void log(uint8_t value);
+  void displayTarget(const ITarget &target) override;
+  void displayPlayer(const Player &player) override;
+  void restart() override;
+  void log(const char *) override;
+  void log(uint8_t value) override;
 };

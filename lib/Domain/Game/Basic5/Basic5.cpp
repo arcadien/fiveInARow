@@ -1,3 +1,4 @@
+
 /*
  *
  * Copyright (c) 2023 Aurélien Labrosse
@@ -14,38 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-#pragma once
+#include <Game/Basic5/Basic5.hpp>
 
-#include <Target/ITarget.hpp>
-#include <stdint.h>
-
-/**
- * @brief Target host manages 5 targets and a IGame implementation
- *
- * A target is considered hit if its luminosity value exceed (ambientValue +
- * threshold) A target has a multicolor led: Off is ready, green is shot, blue
- * is calibration, red is error
- */
-
-class ITargetHost {
-
-public:
-  virtual ~ITargetHost() {}
-
-  virtual void restart() = 0;
-
-  /**
-   * Callback for system clock
-   */
-  virtual void update() = 0;
-
-  /**
-   * Notification led on
-   */
-  virtual void ledOn() = 0;
-
-  /**
-   * Notification led off
-   */
-  virtual void ledOff() = 0;
-};
+Player *Basic5::getCurrentPlayer() {
+    return &this->player;
+}

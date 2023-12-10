@@ -37,6 +37,12 @@ static const uint8_t TARGET_COUNT = 5;
 LDRTarget _targets[TARGET_COUNT] = {LDRTarget(A0), LDRTarget(A1), LDRTarget(A2),
                                     LDRTarget(A3), LDRTarget(A4)};
 
+TargetHost::TargetHost(IGame *game) {
+
+  this->game = game;
+  thresholdCache = 0;
+}
+
 /**
  * Fallback method called when garbage command
  * is received on the serial port
@@ -88,7 +94,7 @@ void TargetHost::setup() {
   _serial_commands.AddCommand(&serial_cmd_changePlayer);
   _serial_commands.AddCommand(&serial_cmd_reset);
 
-  ui->restart();
+  this->game->restart();
 }
 
 void TargetHost::update() {
@@ -108,8 +114,7 @@ void serial_cmd_unrecognized_callback(SerialCommands *sender, const char *cmd) {
 
 void serial_cmd_reset_callback(SerialCommands *sender) {
   TargetHost *targetHost = static_cast<TargetHost *>(sender->context);
-  targetHost->game->reset();
-  targetHost->ui->restart();
+  targetHost->game->restart();
 }
 
 void serial_cmd_setThreshold_callback(SerialCommands *sender) {
@@ -119,9 +124,8 @@ void serial_cmd_setThreshold_callback(SerialCommands *sender) {
 
   if (value > 0 && value != targetHost->getThreshold()) {
     targetHost->storeThreshold(value);
-    targetHost->ui->log((const char *)F("Thrsh: "));
-    targetHost->ui->log(value);
-    targetHost->ui->log("\n");
+    sender->GetSerial()->print("Thrsh: ");
+    sender->GetSerial()->println(value);
   }
 }
 
@@ -131,12 +135,4 @@ void serial_cmd_changePlayer_callback(SerialCommands *sender) {
   targetHost->game->changeCurrentPlayerTo(playerId);
 }
 
-void TargetHost::reset() { ui->resetTargets(); }
-
-TargetHost::TargetHost(Game *game, BTEGui *ui) {
-
-  this->game = game;
-  this->ui = ui;
-
-  thresholdCache = 0;
-}
+void TargetHost::restart() { game->restart(); }

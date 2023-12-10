@@ -16,51 +16,28 @@
  */
 #pragma once
 
-#include <Player.hpp>
-#include <Target/ITargetUi.hpp>
-
 #include <stdint.h>
 
 /**
- * A game has 4 players
+ * A player has 5 cycling rounds
  */
-class Game {
+class Player {
 
 public:
-  static const uint8_t PLAYER_COUNT = 4;
+  static const uint8_t ROUND_COUNT = 5;
+  static const uint8_t MAX_HIT_IN_A_ROUND = 5;
 
-  // clang-format off
-  Player players[PLAYER_COUNT] = {
-    Player(0), 
-    Player(1),
-    Player(2), 
-    Player(3)
-  };
-  // clang-format on
-
+  const uint8_t id;
+  uint8_t hit[ROUND_COUNT] = {0, 0, 0, 0, 0};
   uint8_t currentRound;
-  Player *currentPlayer;
+  uint8_t totalShoots;
 
-  Game();
+  explicit Player(uint8_t id);
 
+  uint8_t getTotalHitCount() const;
+
+  void restart();
+  void startRound();
+  void endRound();
   void recordSucceededShoot();
-
-  /**
-   * Change current player
-   * playerIndex shall be [0;3]
-   */
-  void changeCurrentPlayerTo(uint8_t playerIndex);
-
-  /**
-   * End current player round, and initiate next player round
-   */
-  void nextRound();
-
-  /**
-   * Return true when all rounds have been played. A game stay finished until
-   * restart.
-   */
-  bool isFinished();
-
-  void reset();
 };

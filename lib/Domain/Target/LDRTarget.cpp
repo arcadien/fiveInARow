@@ -18,8 +18,8 @@
 #include <Target/LDRTarget.hpp>
 
 LDRTarget::LDRTarget(uint8_t luminosityPin)
-    : ambiantLuminosity(0), luminosityPin(luminosityPin), state(Ready),
-      threshold(0) {
+    : ambiantLuminosity(0), luminosityPin(luminosityPin),
+      state(ITarget::State::Ready), threshold(0) {
 
   state = ITarget::State::Activated;
 }
@@ -28,7 +28,7 @@ void LDRTarget::post(ITarget::Event event) { nextEvent = event; }
 
 void LDRTarget::update() {
 
-  if (nextEvent != NoEvent) {
+  if (nextEvent != ITarget::Event::NoEvent) {
 
     switch (state) {
 
@@ -55,14 +55,14 @@ void LDRTarget::update() {
         onReady();
       }
     }
-    }
-
-    if (nextEvent == ITarget::Event::Error) {
+    
+    case ITarget::State::Error: {
       onError();
+    }
     }
 
     // consumed or ignored
-    nextEvent = NoEvent;
+    nextEvent = ITarget::Event::NoEvent;
   } else {
     if (getLuminosity() > (ambiantLuminosity + threshold)) {
       post(ITarget::Event::Shoot);

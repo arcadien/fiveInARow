@@ -16,10 +16,10 @@
  */
 #pragma once
 
-#include <Game.hpp>
+#include <Game/IGame.hpp>
 #include <Target/ITargetUi.hpp>
-#include <TargetHost/BTEGui.hpp>
 #include <TargetHost/ITargetHost.hpp>
+
 #include <stdint.h>
 
 /**
@@ -37,6 +37,14 @@ class TargetHost : public ITargetHost {
   uint8_t thresholdCache;
 
 public:
+  IGame *game;
+
+  TargetHost(IGame *game);
+  void ledOn() override;
+  void ledOff() override;
+  void restart() override;
+  void update() override;
+
   void storeThreshold(uint8_t threshold);
 
   /**
@@ -45,18 +53,6 @@ public:
    */
 
   uint8_t getThreshold();
-
-  Game *game;
-  BTEGui *ui;
-
-  TargetHost(Game *game, BTEGui *ui);
-
-  void ledOn() override;
-  void ledOff() override;
-  void reset() override;
-  void update() override;
-
-  /* Specific methods */
 
   void setup();
 };

@@ -16,6 +16,11 @@
  */
 #pragma once
 
+/**
+ * Designed to manage hardware buttons and their different behaviour:
+ * - short press
+ * - long press
+ */
 class Contactor {
 
   static const int LONG_PRESS = 2000;

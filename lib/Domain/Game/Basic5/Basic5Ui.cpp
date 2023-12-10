@@ -1,3 +1,4 @@
+
 /*
  *
  * Copyright (c) 2023 Aurélien Labrosse
@@ -15,7 +16,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <TargetHost/BTEGui.hpp>
+#include <Game/Basic5/Basic5Ui.hpp>
 
 #if not defined(NATIVE)
 #include <Arduino.h>
@@ -23,41 +24,58 @@
 
 static char stringBuffer[64];
 
+static const char *TARGET_TO_WHITE = "*%cR255G255B255*";
+static const char *TARGET_TO_BLACK = "**%cR0G0B0*";
+
+void Basic5Ui::restart() { sendUIDescriptionToBluetoothElectronics(); }
+void Basic5Ui::displayTarget(const ITarget &target) {}
+void Basic5Ui::displayPlayer(const Player &player) {}
+
 /**
  * Indirection to easy switch implementation
  * and does not pollute main code
  */
-void BTEGui::_output(const char *message) {
-#if not defined(NATIVE)
-  Serial.println(stringBuffer);
-#else
+void Basic5Ui::_output(const char *message) {
+
+#if defined(NATIVE)
   out << message << "\n";
+#else
+  Serial.println(message);
 #endif
 }
 
-void BTEGui::updateTarget(ITarget* target) {
-  char letter = TARGET_APP_LETTERS[(uint8_t)target];
-
-  sprintf(stringBuffer, "*%cR255G255B255*", letter);
+void Basic5Ui::log(const char *message) {
+  sprintf(stringBuffer, "%s", message);
+  _output(stringBuffer);
+}
+void Basic5Ui::log(uint8_t value) {
+  sprintf(stringBuffer, "%u", value);
   _output(stringBuffer);
 }
 
-void BTEGui::resetTargets() {
-  targetState = 0;
+/*
+void updateTarget(ITarget *target) {
+  char letter = TARGET_APP_LETTERS[(uint8_t)target];
+
+  sprintf(stringBuffer, TARGET_TO_WHITE, letter);
+  _output(stringBuffer);
+}
+
+void resetTargets() {
   for (char letter : TARGET_APP_LETTERS) {
-    sprintf(stringBuffer, "*%cR0G0B0*", letter);
+    sprintf(stringBuffer, TARGET_TO_BLACK, letter);
     _output(stringBuffer);
   }
 }
 
-void BTEGui::setCurrentPlayer(uint8_t playerId) {
+void setCurrentPlayer(uint8_t playerId) {
   if (playerId < 4) {
     sprintf(stringBuffer, "*M%s*", PLAYER_COLORS[playerId]);
     _output(stringBuffer);
   }
 }
 
-void BTEGui::displayPlayerInfo(const Player &player) {
+void displayPlayerInfo(const Player &player) {
 
   uint8_t baseIndex = player.id * 2;
   char totalLetter = PLAYER_DATA_APP_LETTERS[baseIndex];
@@ -70,18 +88,10 @@ void BTEGui::displayPlayerInfo(const Player &player) {
           unsigned(player.getTotalHitCount()));
   _output(stringBuffer);
 }
-
-void BTEGui::log(const char *message) {
-  sprintf(stringBuffer, "%s", message);
-  _output(stringBuffer);
-}
-void BTEGui::log(uint8_t value) {
-  sprintf(stringBuffer, "%u", value);
-  _output(stringBuffer);
-}
+*/
 
 #if not defined(NATIVE)
-static void sendApplication() {
+void sendUIDescriptionToBluetoothElectronics() {
   Serial.println(F("*.kwl"));
   Serial.println(F("clear_panel()"));
   Serial.println(F("set_grid_size(21,10)"));
@@ -129,17 +139,14 @@ static void sendApplication() {
   Serial.println(F("*"));
 }
 #else
-static void sendApplication() {}
+void Basic5Ui::sendUIDescriptionToBluetoothElectronics() {
+  _output("Sent UI description over serial link");
+}
 #endif
 
-void BTEGui::restart() {
-  sendApplication();
-  resetTargets();
-}
-
-const char *BTEGui::PLAYER_COLORS[] = {"Yellow", "Green", "Red", "Blue"};
-const char BTEGui::TARGET_APP_LETTERS[5] = {'A', 'Z', 'E', 'R', 'T'};
-const char BTEGui::PLAYER_DATA_APP_LETTERS[8] = {
+const char *Basic5Ui::PLAYER_COLORS[] = {"Yellow", "Green", "Red", "Blue"};
+const char Basic5Ui::TARGET_APP_LETTERS[5] = {'A', 'Z', 'E', 'R', 'T'};
+const char Basic5Ui::PLAYER_DATA_APP_LETTERS[8] = {
     'Q', 'W', // player 1
     'S', 'X', // player 2
     'D', 'C', // player 3

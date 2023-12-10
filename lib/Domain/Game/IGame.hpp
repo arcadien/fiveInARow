@@ -16,28 +16,15 @@
  */
 #pragma once
 
-#include <stdint.h>
-
+#include <Game/Player.hpp>
 /**
- * A player has 5 cycling rounds
+ * Generic interface for all games
  */
-class Player {
-
+class IGame {
 public:
-  static const uint8_t ROUND_COUNT = 5;
-  static const uint8_t MAX_HIT_IN_A_ROUND = 5;
-
-  const uint8_t id;
-  uint8_t hit[ROUND_COUNT] = {0, 0, 0, 0, 0};
-  uint8_t currentRound;
-  uint8_t totalShoots;
-
-  explicit Player(uint8_t id);
-
-  uint8_t getTotalHitCount() const;
-
-  void reset();
-  void startRound();
-  void endRound();
-  void recordSucceededShoot();
+  virtual ~IGame(){};
+  
+  virtual Player *getCurrentPlayer() = 0;
+  virtual void restart() = 0;
+  virtual void changeCurrentPlayerTo(uint8_t playerId) = 0;
 };
