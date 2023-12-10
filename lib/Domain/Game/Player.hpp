@@ -17,45 +17,27 @@
 #pragma once
 
 #include <stdint.h>
-#include <Player.hpp>
 
-class ITargetGui {
+/**
+ * A player has 5 cycling rounds
+ */
+class Player {
+
 public:
+  static const uint8_t ROUND_COUNT = 5;
+  static const uint8_t MAX_HIT_IN_A_ROUND = 5;
 
-  enum TARGET{
-    One = 0,
-    Two,
-    Three,
-    Four,
-    Five
-  };
-  
-  virtual ~ITargetGui() {}
+  const uint8_t id;
+  uint8_t hit[ROUND_COUNT] = {0, 0, 0, 0, 0};
+  uint8_t currentRound;
+  uint8_t totalShoots;
 
-  /**
-   * Tell GUI a target has been hit
-  */
-  virtual void hitTarget(TARGET) = 0;
+  explicit Player(uint8_t id);
 
-  /**
-   * Ask GUI if a target has been hit
-  */
-  virtual bool isTargetHit(TARGET) = 0;
+  uint8_t getTotalHitCount() const;
 
-  /**
-   * Reset target hit status
-  */
-  virtual void resetTargets() = 0;
-
-  virtual void setCurrentPlayer(uint8_t playerId) = 0;
-
-  /*
-  * Send player info : id, shoots and hit shoots
-  *
-  *
-  */
-  virtual void displayPlayerInfo(const Player&) = 0;
-
-  virtual void restart() = 0;
-  
+  void restart();
+  void startRound();
+  void endRound();
+  void recordSucceededShoot();
 };

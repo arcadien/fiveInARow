@@ -15,28 +15,31 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 #pragma once
-#include <Target/ITargetUi.hpp>
+
 #include <stdint.h>
 
-class TestGui : public ITargetUi {
+// forward declaration
+class Gun;
 
+class IGunHal {
 public:
-  uint8_t targetState;
+  virtual ~IGunHal() {}
 
-  TestGui() : targetState(0) {}
+  virtual void setGun(Gun *gun) = 0;
 
-  void hitTarget(ITargetUi::TARGET target) override {
-    targetState |= (1 << target);
-  }
-
-  bool isTargetHit(ITargetUi::TARGET target) {
-    return ((targetState & (1 << target)) == (1 << target));
-  }
-
-  void setCurrentPlayer(uint8_t playerId) override {}
-  void restart() override {}
-  void resetTargets() override { targetState = 0; }
-  void displayPlayerInfo(const Player &player) override {}
-  void log(const char *) override {}
-  void log(uint8_t value) override {}
+  /*
+   * the 'loop' method shall be called each 10ms
+   */
+  virtual void setupHeartbeat() = 0;
+  virtual bool triggerIsUp() = 0;
+  virtual bool buttonIsUp() = 0;
+  virtual void laserOn() = 0;
+  virtual void laserOff() = 0;
+  virtual void vibrationOn() = 0;
+  virtual void vibrationOff() = 0;
+  virtual uint16_t getBatteryVoltageMv() = 0;
+  virtual uint8_t getBatteryVoltagePercent() = 0;
+  virtual bool isCharging() = 0;
+  virtual void sleep() = 0;
+  virtual void configureInputCallbacks() = 0;
 };

@@ -14,20 +14,24 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-#pragma once
 
-#include <IGunHal.hpp>
-#include <stdint.h>
+/**
+ *
+ * This test suite is for targetHost implementation with LDRTarget
+ *
+ */
 
-class Gun {
+#include <ArduinoFake.h>
+using namespace fakeit;
 
-  IGunHal &_hal;
+#include <Game.hpp>
+#include <target/ITargetUi.hpp>
+#include <target/TargetHost.hpp>
 
-public:
-  uint8_t availableShots;
-  Gun(IGunHal &hal) : _hal(hal), availableShots(0) {}
-  void onButton1ShortPress();
-  void onButton1LongPress();
-  void onButton2ShortPress();
-  void onButton2LongPress();
-};
+#include <unity.h>
+
+int main(int, char **) {
+  UNITY_BEGIN();
+  UNITY_END();
+  return 0;
+}

@@ -16,18 +16,15 @@
  */
 #pragma once
 
-class IGunHal {
+#include <Game/Player.hpp>
+/**
+ * Generic interface for all games
+ */
+class IGame {
 public:
-  virtual ~IGunHal() {}
-  virtual bool isButton1Pressed() = 0;
-  virtual bool isButton2Pressed() = 0;
-  virtual void shortDelay() = 0;
-  virtual void longDelay() = 0;
-  virtual void ledOn() = 0;
-  virtual void ledOff() = 0;
-  virtual void laserOn() = 0;
-  virtual void laserOff() = 0;
-  virtual void vibrationOn() = 0;
-  virtual void vibrationOff() = 0;
-  virtual void deepSleep() = 0;
+  virtual ~IGame(){};
+  
+  virtual Player *getCurrentPlayer() = 0;
+  virtual void restart() = 0;
+  virtual void changeCurrentPlayerTo(uint8_t playerId) = 0;
 };

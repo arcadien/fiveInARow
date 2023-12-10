@@ -14,26 +14,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-#include <Gun.hpp>
+#pragma once
 
-static const uint8_t SHOTS_PER_REARM = 5;
+#include <Game/Player.hpp>
+#include <Target/ITarget.hpp>
+#include <stdint.h>
 
-void Gun::onButton1ShortPress() {
-  if (availableShots > 0) {
-    _hal.laserOn();
-    _hal.vibrationOn();
-    _hal.shortDelay();
-    _hal.laserOff();
-    _hal.vibrationOff();
-    availableShots--;
-  }
-  
-}
-
-void Gun::onButton1LongPress() {
-    _hal.deepSleep();
-}
-void Gun::onButton2ShortPress() { availableShots = SHOTS_PER_REARM; }
-void Gun::onButton2LongPress() {
-    _hal.laserOn();
-}
+class IGameUi {
+public:
+  virtual ~IGameUi(){};
+  virtual void displayTarget(const ITarget &target) = 0;
+  virtual void displayPlayer(const Player &player) = 0;
+  virtual void restart() = 0;
+  virtual void log(const char *) = 0;
+  virtual void log(uint8_t value) = 0;
+};

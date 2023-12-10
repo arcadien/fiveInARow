@@ -1,6 +1,7 @@
+
 /*
  *
- * Copyright (c) 2023 Aurelien Labrosse
+ * Copyright (c) 2023 Aurélien Labrosse
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,20 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-
-#include <Arduino.h>
-#include <TargetHost/TargetHost.hpp>
 #include <Game/Basic5/Basic5.hpp>
-#include <Game/Basic5/Basic5Ui.hpp>
 
-
-Basic5Ui ui;
-Basic5 game(&ui);
-TargetHost host(&game);
-
-void setup() {
-  host.setup();
-  game.restart();
+Player *Basic5::getCurrentPlayer() {
+    return &this->player;
 }
-
-void loop() { host.update(); }

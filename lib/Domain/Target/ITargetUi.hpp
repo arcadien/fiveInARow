@@ -15,28 +15,22 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 #pragma once
-#include <Target/ITargetUi.hpp>
+
+#include <Target/ITarget.hpp>
 #include <stdint.h>
 
-class TestGui : public ITargetUi {
-
+class ITargetUi {
 public:
-  uint8_t targetState;
+  virtual ~ITargetUi() {}
 
-  TestGui() : targetState(0) {}
+  // map ITarget states
 
-  void hitTarget(ITargetUi::TARGET target) override {
-    targetState |= (1 << target);
-  }
+  virtual void onHit() = 0;
+  virtual void onCalibrating() = 0;
+  virtual void onReady() = 0;
+  virtual void onError() = 0;
 
-  bool isTargetHit(ITargetUi::TARGET target) {
-    return ((targetState & (1 << target)) == (1 << target));
-  }
+  virtual void log(const char *) = 0;
 
-  void setCurrentPlayer(uint8_t playerId) override {}
-  void restart() override {}
-  void resetTargets() override { targetState = 0; }
-  void displayPlayerInfo(const Player &player) override {}
-  void log(const char *) override {}
-  void log(uint8_t value) override {}
+  virtual void log(uint8_t value) = 0;
 };

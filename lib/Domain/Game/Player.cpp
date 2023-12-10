@@ -14,10 +14,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-#include <Player.hpp>
+#include <Game/Player.hpp>
 
 Player::Player(uint8_t id) : id(id), currentRound(0), totalShoots(0) {
-  reset();
+  restart();
 }
 
 uint8_t Player::getTotalHitCount() const {
@@ -28,7 +28,7 @@ uint8_t Player::getTotalHitCount() const {
   return accumulator;
 }
 
-void Player::reset() {
+void Player::restart() {
   // Note: this loop uses less asm code than memset() (release -Os)
   for (uint8_t index = 0; index < ROUND_COUNT; index++) {
     hit[index] = 0;
@@ -37,12 +37,9 @@ void Player::reset() {
   totalShoots = 0;
 }
 
-void Player::startRound() {
-  totalShoots += 5;
-}
+void Player::startRound() { totalShoots += 5; }
 
 void Player::endRound() {
-  currentRound = 0;
   if (currentRound < (ROUND_COUNT - 1)) {
     currentRound++;
   }

@@ -16,28 +16,31 @@
  */
 #pragma once
 
-#include <stdint.h>
+#include <Game/IGame.hpp>
+#include <Game/IGameUi.hpp>
 
 /**
- * A player has 5 cycling rounds
+ * This game has a single player, who have unlimited
+ * ammunition to shot the five targets.
  */
-class Player {
+class Basic5 : public IGame {
+
+  IGameUi *ui;
+  Player player;
 
 public:
-  static const uint8_t ROUND_COUNT = 5;
-  static const uint8_t MAX_HIT_IN_A_ROUND = 5;
+  Basic5(IGameUi *ui) : player(0) { this->ui = ui; }
 
-  const uint8_t id;
-  uint8_t hit[ROUND_COUNT] = {0, 0, 0, 0, 0};
-  uint8_t currentRound;
-  uint8_t totalShoots;
+  ~Basic5() {}
 
-  Player(uint8_t id);
+  Player *getCurrentPlayer();
 
-  uint8_t getTotalHitCount() const;
+  void restart() {
+    ui->restart();
+    player.restart();
+  }
 
-  void reset();
-  void startRound();
-  void endRound();
-  void recordSucceededShoot();
+  void changeCurrentPlayerTo(uint8_t playerId) {
+    // only one player
+  }
 };
